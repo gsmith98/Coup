@@ -9,7 +9,10 @@ const STARTING_COINS = 2;
 const MUST_COUP_AMOUNT = 10;
 const INCOME_BOON = 1;
 const FOREIGN_AID_BOON = 2;
+const TAX_BOON = 3;
 const COUP_COST = 7;
+const ASSASSINATION_COST = 3;
+const STEAL_AMOUNT = 2;
 
 var Player = function(username, initialCards) {
   this.username = username;
@@ -81,6 +84,12 @@ Game.prototype.nextPlayer = function() {
   return next;
 };
 
+Game.prototype.getPlayer = function(username) {
+  var filtered = this.players.filter(x => x.username === username);
+  if (filtered.length === 0) throw "No player with that username!";
+  return filtered[0];
+}
+
 Game.prototype.startGame = function() {
   if (this.isStarted) throw "Game already started!";
   if (this.isOver) throw "Can't restart game!"; //TODO ditch isOver and allow game restart
@@ -106,9 +115,14 @@ Game.prototype.getWinner = function() {
 //So a steal action should only be passed into here after it is sure it will happen
 //App will be responsible for making couped player lose an influence before moving on
 //  and such before moving on by calling game.nextPlayer()
+//actionObj should have keys "player", "action", and "targetPlayer" if applicable
+// player is the string player username
+// action is a string all caps like "TAX" or "FOREIGN AID"
+// targetPlayer is also a string username
 Game.prototype.takeAction = function(actionObj) {
   if (this.currentPlayer().username != actionObj.player) throw "Not your turn!";
-  if(this.currentPlayer().coins >= MUST_COUP_AMOUNT && actionObj.action != "COUP") throw "You must coup with that many coins!"
+  if (this.currentPlayer().coins >= MUST_COUP_AMOUNT && actionObj.action != "COUP") throw "You must coup with that many coins!";
+  if (this.targetPlayer && (actionObj.targetPlayer === actionObj.player || this.getPlayer(actionObj.targetPlayer).isOut)) throw "Invalid action target!";
 
   switch(actionObj.action) {
     case "INCOME":
@@ -117,9 +131,22 @@ Game.prototype.takeAction = function(actionObj) {
     case "FOREIGN AID":
       this.currentPlayer().acquireCoins(FOREIGN_AID_BOON);
       break;
-    case "COUP": //TODO the app will be responsible for making couped player lose an influence before moving on
+    case "COUP":
       if (this.currentPlayer().coins < COUP_COST) throw "Not enough coins to coup!"
       this.currentPlayer().relinquishCoins(COUP_COST);
+      break;
+    case "TAX":
+      this.currentPlayer().acquireCoins(TAX_BOON);
+      break;
+    case "ASSASSINATE":
+      if (this.currentPlayer().coins < ASSASSINATION_COST) throw "Not enough coins to coup!"
+      this.currentPlayer().relinquishCoins(ASSASSINATION_COST);
+      break;
+    case "STEAL":
+      this.currentPlayer().acquireCoins(this.getPlayer(actionObj.targetPlayer).relinquishCoins(STEAL_AMOUNT));
+      break;
+    case "EXCHANGE":
+      //TODO needs to draw 2 cards and return them somehow
       break;
     default:
       throw "Not a valid action!"
