@@ -12,7 +12,10 @@ import {
   View
 } from 'react-native';
 
+var Orientation = require('react-native-orientation')
+
 export default class Coup extends Component {
+
   render() {
     return (
       <View style={styles.container}>

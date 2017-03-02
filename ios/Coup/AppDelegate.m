@@ -15,6 +15,7 @@
 // new 16 - lisa
 #import "Orientation.h" // <--- import
 
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -42,6 +43,13 @@
    return [Orientation getOrientation];
  }
 
+ componentDidMount(){
+
+
+      Orientation.lockToLandscape();
+
+
+  }
 
 
 @end
