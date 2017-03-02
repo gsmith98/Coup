@@ -16,6 +16,26 @@ var game = new Game();
 
 io.on('connection', function(socket){
   //socket routes
+  console.log('connected');
+  socket.on('username', function(username) {
+    if (!username || !username.trim()) {
+      return socket.emit('errorMessage', 'No username!');
+    }
+    socket.username = String(username);
+  });
+
+  socket.on('gameAction', function(action) {
+    if (!action) {
+      return socket.emit('errorMessage', 'Please Click Action');
+    }
+
+    socket.to(socket.room).emit('gameAction', {
+      username: socket.username,
+      action:
+    });
+
+  })
+
 });
 
 
