@@ -90,6 +90,7 @@ Game.prototype.startGame = function() {
   return this.currentPlayer();
 };
 
+//will return winning player and end the game if able, otherwise returns null
 Game.prototype.getWinner = function() {
   var remainingPlayers = this.players.filter(x => !x.isOut());
   if (remainingPlayers.length === 1) {
@@ -103,6 +104,8 @@ Game.prototype.getWinner = function() {
 
 //This file does not handle managing BS calls and block opportunities.
 //So a steal action should only be passed into here after it is sure it will happen
+//App will be responsible for making couped player lose an influence before moving on
+//  and such before moving on by calling game.nextPlayer()
 Game.prototype.takeAction = function(actionObj) {
   if (this.currentPlayer().username != actionObj.player) throw "Not your turn!";
   if(this.currentPlayer().coins >= MUST_COUP_AMOUNT && actionObj.action != "COUP") throw "You must coup with that many coins!"
@@ -116,11 +119,11 @@ Game.prototype.takeAction = function(actionObj) {
       break;
     case "COUP": //TODO the app will be responsible for making couped player lose an influence before moving on
       if (this.currentPlayer().coins < COUP_COST) throw "Not enough coins to coup!"
-      this.currentPlayer().
+      this.currentPlayer().relinquishCoins(COUP_COST);
+      break;
     default:
       throw "Not a valid action!"
   }
-  return this.nextPlayer();
 }
 
 module.exports = Game;
