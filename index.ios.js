@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import SocketIOClient from 'socket.io-client';
+import io from 'socket.io-client';
 import Prompt from 'react-native-prompt';
 // var socketConfig = { path: '/socket' };
 // var socket = new SocketIO('localhost:3000', socketConfig);
@@ -17,6 +17,11 @@ import Prompt from 'react-native-prompt';
 // socket.disconnect();
 //
 // socket.reconnect();
+window.navigator.userAgent = 'ReactNative';
+
+const socket = io('http://localhost:8081', {
+  transports: ['websocket'] // you need to explicitly tell it to use websockets
+});
 
 import {
   AppRegistry,
@@ -45,7 +50,7 @@ var App = React.createClass({
     return {
       roomName: "Praise the jiang",
       username: '',
-      socket: this.props.socket
+      socket: socket
     }
   },
   componentDidMount: function() {
@@ -72,7 +77,7 @@ var App = React.createClass({
       });
       this.state.socket.emit('username', this.state.socket.username)
 
-      self.props.navigator.push({
+      this.props.navigator.push({
           component: Game,
           title: "Game Board"
         })
@@ -109,12 +114,11 @@ var App = React.createClass({
 export default class Coup extends Component {
   constructor(props) {
     super(props);
-    this.socket = SocketIOClient('http://localhost:8081');
   }
   render() {
-    return (
+    return (  
       <View>
-        <App socket={this.socket}/>
+        <App />
       </View>
     );
   }
