@@ -30,7 +30,7 @@ var BoardView = React.createClass({
             left: 1 * CELL_SIZE + CELL_PADDING,
             top: 0 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./duke.png')}>
+              source={require('./images/duke.png')}>
             </Image>
           </View>
 
@@ -38,49 +38,49 @@ var BoardView = React.createClass({
           left: 2 * CELL_SIZE + CELL_PADDING,
           top: 0 * CELL_SIZE + CELL_PADDING}]}>
           <Image
-            source={require('./duke.png')}>
+            source={require('./images/contessa.png')}>
           </Image>
         </View>
         <View key={4} style={[styles.btile, {
           left: 0 * CELL_SIZE + CELL_PADDING,
           top: 1 * CELL_SIZE + CELL_PADDING}]}>
           <Image
-            source={require('./duke.png')}>
+            source={require('./images/assassin.png')}>
           </Image>
         </View>
         <View key={7} style={[styles.btile, {
           left: 3 * CELL_SIZE + CELL_PADDING,
           top: 1 * CELL_SIZE + CELL_PADDING}]}>
           <Image
-            source={require('./duke.png')}>
+            source={require('./images/captain.png')}>
           </Image>
         </View>
         <View key={8} style={[styles.btile, {
           left: 0 * CELL_SIZE + CELL_PADDING,
           top: 2 * CELL_SIZE + CELL_PADDING}]}>
           <Image
-            source={require('./duke.png')}>
+            source={require('./images/ambassador.png')}>
           </Image>
         </View>
         <View key={11} style={[styles.btile, {
           left: 3 * CELL_SIZE + CELL_PADDING,
           top: 2 * CELL_SIZE + CELL_PADDING}]}>
           <Image
-            source={require('./duke.png')}>
+            source={require('./images/coup.png')}>
           </Image>
         </View>
         <View key={13} style={[styles.btile, {
           left: 1 * CELL_SIZE + CELL_PADDING,
           top: 3 * CELL_SIZE + CELL_PADDING}]}>
           <Image
-            source={require('./duke.png')}>
+            source={require('./images/coup.png')}>
           </Image>
         </View>
         <View key={14} style={[styles.btile, {
           left: 2 * CELL_SIZE + CELL_PADDING,
           top: 3 * CELL_SIZE + CELL_PADDING}]}>
           <Image
-            source={require('./duke.png')}>
+            source={require('./images/coup.png')}>
           </Image>
         </View>
       </View>
