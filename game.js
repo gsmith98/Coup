@@ -47,6 +47,8 @@ Player.prototype.isOut = function() {
   return !this.influence.some(x => x.alive);
 };
 
+//TODO make sure all functions check if game is started
+
 var Game = function() {
   this.isStarted = false;
   this.isOver = false;
@@ -151,6 +153,27 @@ Game.prototype.takeAction = function(actionObj) {
     default:
       throw "Not a valid action!"
   }
-}
+};
 
-module.exports = Game;
+//call with a username and a role name. If user has that role the shuffle it in and get a new card
+Game.prototype.returnAndReplace = function(username, role) {
+  var thePlayer = this.getPlayer(username);
+  if (!ROLES.includes(role)) throw "Not a valid role!";
+  if (!thePlayer.influence.some((x, i) => {
+    if (x.alive && x.role === role) {
+      thePlayer.influence.splice(i,1);
+      return true;
+    }
+  })) throw "Player does not have specified role!";
+
+  this.deck.push(role);
+  this.deck = _.shuffle(this.deck);
+  thePlayer.influence.push({role: this.drawFromCourtDeck(1)[0], alive: true}); //TODO shuffle player influence
+  return thePlayer; //TODO return player?
+};
+
+//TODO EXCHANGE
+//TODO hasRole (for bs calls) (and refactor other code to use it)
+
+
+// module.exports = Game; //TODO uncomment
