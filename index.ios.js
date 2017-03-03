@@ -103,7 +103,7 @@ var UserCard = React.createClass({
 
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 4; // four-by-four grid
-var CELL_SIZE = Math.floor(width * .15); // 20% of the screen width
+var CELL_SIZE = Math.floor(width * .125); // 20% of the screen width
 var CELL_PADDING = Math.floor(CELL_SIZE * .05); // 5% of the cell size
 var BORDER_RADIUS = CELL_PADDING * 2;
 var TILE_SIZE = CELL_SIZE - CELL_PADDING * 2;
@@ -117,77 +117,92 @@ var BoardView = React.createClass({
              </View>
            </View>
   },
+
   renderTiles(){
     return (
-      <View>
 
+      <View style={styles.container}>
+        <View style={{marginTop: 37.5, flex:.5}}>
           <View key={1} style={[styles.btile, {
             left: 1 * CELL_SIZE + CELL_PADDING,
             top: 0 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/duke.png')}>
+              source={require('./images/duke1.png')}>
             </Image>
           </View>
+          <View key={2} style={[styles.btile, {
+            left: 2 * CELL_SIZE + CELL_PADDING,
+            top: 0 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./images/contessa1.png')}>
+            </Image>
+          </View>
+          <View key={4} style={[styles.btile, {
+            left: 0 * CELL_SIZE + CELL_PADDING,
+            top: 1 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./images/assassin1.png')}>
+            </Image>
+          </View>
+          <View key={7} style={[styles.btile, {
+            left: 3 * CELL_SIZE + CELL_PADDING,
+            top: 1 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./images/captain1.png')}>
+            </Image>
+          </View>
+          <View key={8} style={[styles.btile, {
+            left: 0 * CELL_SIZE + CELL_PADDING,
+            top: 2 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./images/ambassador1.png')}>
+            </Image>
+          </View>
+          <View key={11} style={[styles.btile, {
+            left: 3 * CELL_SIZE + CELL_PADDING,
+            top: 2 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./images/coup1.png')}>
+            </Image>
+          </View>
+          <View key={13} style={[styles.btile, {
+            left: 1 * CELL_SIZE + CELL_PADDING,
+            top: 3 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./images/coup1.png')}>
+            </Image>
+          </View>
+          <View key={14} style={[styles.btile, {
+            left: 2 * CELL_SIZE + CELL_PADDING,
+            top: 3 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./images/coup1.png')}>
+            </Image>
+          </View>
+        </View>
 
-        <View key={2} style={[styles.btile, {
-          left: 2 * CELL_SIZE + CELL_PADDING,
-          top: 0 * CELL_SIZE + CELL_PADDING}]}>
-          <Image
-            source={require('./images/contessa.png')}>
-          </Image>
+        <View style={{flex:.5}}>
+          <View key={1} style={[styles.btile, {
+            left: .2 * CELL_SIZE + CELL_PADDING,
+            top: 0 * CELL_SIZE + CELL_PADDING}]}>
+            <Text>
+            Lisa - taxed (6 coins)
+            Graham - stole from Junjie (8 coins)
+            </Text>
+          </View>
         </View>
-        <View key={4} style={[styles.btile, {
-          left: 0 * CELL_SIZE + CELL_PADDING,
-          top: 1 * CELL_SIZE + CELL_PADDING}]}>
-          <Image
-            source={require('./images/assassin.png')}>
-          </Image>
-        </View>
-        <View key={7} style={[styles.btile, {
-          left: 3 * CELL_SIZE + CELL_PADDING,
-          top: 1 * CELL_SIZE + CELL_PADDING}]}>
-          <Image
-            source={require('./images/captain.png')}>
-          </Image>
-        </View>
-        <View key={8} style={[styles.btile, {
-          left: 0 * CELL_SIZE + CELL_PADDING,
-          top: 2 * CELL_SIZE + CELL_PADDING}]}>
-          <Image
-            source={require('./images/ambassador.png')}>
-          </Image>
-        </View>
-        <View key={11} style={[styles.btile, {
-          left: 3 * CELL_SIZE + CELL_PADDING,
-          top: 2 * CELL_SIZE + CELL_PADDING}]}>
-          <Image
-            source={require('./images/coup.png')}>
-          </Image>
-        </View>
-        <View key={13} style={[styles.btile, {
-          left: 1 * CELL_SIZE + CELL_PADDING,
-          top: 3 * CELL_SIZE + CELL_PADDING}]}>
-          <Image
-            source={require('./images/coup.png')}>
-          </Image>
-        </View>
-        <View key={14} style={[styles.btile, {
-          left: 2 * CELL_SIZE + CELL_PADDING,
-          top: 3 * CELL_SIZE + CELL_PADDING}]}>
-          <Image
-            source={require('./images/coup.png')}>
-          </Image>
-        </View>
+
       </View>
     )
   }
 });
 
+
 var styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#644B62',
   },
   bcontainer: {
@@ -211,6 +226,7 @@ var styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-start',
     backgroundColor: '#644B62',
