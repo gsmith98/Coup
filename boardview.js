@@ -21,25 +21,52 @@ var BoardView = React.createClass({
            </View>;
   },
 
-  renderTiles() {
-    var result = [];
-    for (var row = 0; row < SIZE; row++) {
-      for (var col = 0; col < SIZE; col++) {
-        var key = row * SIZE + col;
-        var letter = String.fromCharCode(65 + key);
-        var position = {
-          left: col * CELL_SIZE + CELL_PADDING,
-          top: row * CELL_SIZE + CELL_PADDING
-        };
-        result.push(
-          <View key={key} style={[styles.btile, position]}>
-            <Text style={styles.letter}>{letter}</Text>
-          </View>
-        );
-      }
-    }
-    return result;
-  },
+  renderTiles(){
+    return (
+      <View>
+        <View key={1} style={[styles.btile, {
+          left: 1 * CELL_SIZE + CELL_PADDING,
+          top: 0 * CELL_SIZE + CELL_PADDING}]}>
+            <Text style={styles.letter}>A</Text>
+        </View>
+        <View key={2} style={[styles.btile, {
+          left: 2 * CELL_SIZE + CELL_PADDING,
+          top: 0 * CELL_SIZE + CELL_PADDING}]}>
+            <Text style={styles.letter}>A</Text>
+        </View>
+        <View key={4} style={[styles.btile, {
+          left: 0 * CELL_SIZE + CELL_PADDING,
+          top: 1 * CELL_SIZE + CELL_PADDING}]}>
+            <Text style={styles.letter}>A</Text>
+        </View>
+        <View key={7} style={[styles.btile, {
+          left: 3 * CELL_SIZE + CELL_PADDING,
+          top: 1 * CELL_SIZE + CELL_PADDING}]}>
+            <Text style={styles.letter}>A</Text>
+        </View>
+        <View key={8} style={[styles.btile, {
+          left: 0 * CELL_SIZE + CELL_PADDING,
+          top: 2 * CELL_SIZE + CELL_PADDING}]}>
+            <Text style={styles.letter}>A</Text>
+        </View>
+        <View key={11} style={[styles.btile, {
+          left: 3 * CELL_SIZE + CELL_PADDING,
+          top: 2 * CELL_SIZE + CELL_PADDING}]}>
+            <Text style={styles.letter}>A</Text>
+        </View>
+        <View key={13} style={[styles.btile, {
+          left: 1 * CELL_SIZE + CELL_PADDING,
+          top: 3 * CELL_SIZE + CELL_PADDING}]}>
+            <Text style={styles.letter}>A</Text>
+        </View>
+        <View key={14} style={[styles.btile, {
+          left: 2 * CELL_SIZE + CELL_PADDING,
+          top: 3 * CELL_SIZE + CELL_PADDING}]}>
+            <Text style={styles.letter}>A</Text>
+        </View>
+      </View>
+    )
+  }
 });
 
 var styles = StyleSheet.create({
