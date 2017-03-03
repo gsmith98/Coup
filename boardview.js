@@ -1,87 +1,12 @@
-import React, { Component } from 'react';
-import Prompt from 'react-native-prompt';
+'use strict';
+
+import React, { Component} from 'react';
 import {
-  AppRegistry,
   StyleSheet,
   Text,
   View,
-  TextInput,
-  TouchableOpacity,
-  NavigatorIOS,
-  ListView,
-  AsyncStorage,
   Image
 } from 'react-native';
-
-window.navigator.userAgent = "react-native";
-import SocketIOClient from 'socket.io-client';
-
-var Orientation = require('react-native-orientation')
-
-export default class Coup extends Component {
-  constructor(props) {
-    super(props);
-    this.socket = SocketIOClient('http://localhost:8081');
-  }
-  render() {
-    return (  
-      <NavigatorIOS
-        initialRoute={{
-          component: App,
-          title: ""
-        }}
-        style={{flex: 1}}
-      />
-    );
-  }
-}
-
-var App = React.createClass({
-  getInitialState: function() {
-    return {
-      roomName: "Praise the jiang",
-      username: '',
-      socket: SocketIOClient('http://localhost:8081')
-    }
-  },
-   signIn(username, event) {
-     var self = this;
-    this.setState({
-      promptVisible: false
-    })
-    this.state.socket.emit('connect', function () {
-        this.setState({
-          username: username
-        });
-        this.state.socket.emit('username', this.state.username);
-    }.bind(this));
-
-    this.props.navigator.push({
-        component: BoardView,
-        title: "Game Board"
-    })
-  },
-  render: function() {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontSize: 20 }} onPress={() => this.setState({ promptVisible: true })}>
-            Join the Room
-          </Text>
-        <Prompt
-            title="What is your game name"
-            placeholder="Start typing"
-            defaultValue=""
-            visible={ this.state.promptVisible }
-            onCancel={ () => this.setState({
-              promptVisible: false
-            })}
-            onSubmit={ (value) => this.signIn(value)}
-          />
-      </View>
-      );
-  }
-});
-
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 4; // four-by-four grid
 var CELL_SIZE = Math.floor(width * .15); // 20% of the screen width
@@ -92,11 +17,9 @@ var LETTER_SIZE = Math.floor(TILE_SIZE * .75);
 
 var BoardView = React.createClass({
   render() {
-    return <View style={styles.container}>
-            <View style={styles.bcontainer}>
+    return <View style={styles.bcontainer}>
              {this.renderTiles()}
-             </View>
-           </View>
+           </View>;
   },
 
   renderTiles(){
@@ -166,12 +89,6 @@ var BoardView = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#644B62',
-  },
   bcontainer: {
     width: CELL_SIZE * SIZE,
     height: CELL_SIZE * SIZE,
@@ -191,13 +108,6 @@ var styles = StyleSheet.create({
     fontSize: LETTER_SIZE,
     backgroundColor: 'transparent',
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    backgroundColor: '#644B62',
-  },
 });
 
-
-AppRegistry.registerComponent('Coup', () => Coup);
+module.exports = BoardView;
