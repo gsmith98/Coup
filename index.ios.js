@@ -39,7 +39,6 @@ export default class Coup extends Component {
 var Login = React.createClass({
   getInitialState: function() {
     return {
-      roomName: "Praise the jiang",
       username: '',
       socket: SocketIOClient('http://localhost:8081')
     }
