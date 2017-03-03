@@ -44,18 +44,18 @@ var App = React.createClass({
       socket: SocketIOClient('http://localhost:8081')
     }
   },
+  componentDidMount(){
+    this.state.socket.on('connect', function() {
+     console.log('connected');
+    });
+   },
    signIn(username, event) {
-     var self = this;
+    var self = this;
     this.setState({
       promptVisible: false
     })
-    this.state.socket.emit('connect', function () {
-        this.setState({
-          username: username
-        });
-        this.state.socket.emit('username', this.state.username);
+    this.state.socket.emit('username', this.state.username);
     }.bind(this));
-
     this.props.navigator.push({
         component: BoardView,
         title: "Game Board"
