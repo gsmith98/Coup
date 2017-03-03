@@ -27,7 +27,7 @@ export default class Coup extends Component {
     return (  
       <NavigatorIOS
         initialRoute={{
-          component: App,
+          component: Login,
           title: ""
         }}
         style={{flex: 1}}
@@ -36,7 +36,7 @@ export default class Coup extends Component {
   }
 }
 
-var App = React.createClass({
+var Login = React.createClass({
   getInitialState: function() {
     return {
       roomName: "Praise the jiang",
@@ -52,10 +52,10 @@ var App = React.createClass({
    signIn(username, event) {
     var self = this;
     this.setState({
-      promptVisible: false
+      promptVisible: false,
+      username: username
     })
     this.state.socket.emit('username', this.state.username);
-    }.bind(this));
     this.props.navigator.push({
         component: BoardView,
         title: "Game Board"

@@ -16,33 +16,7 @@ var Game = require('./game');
 var game = new Game();
 
 function getGameState(){
-  var numCards = {};
-  var currentPlayerUsername;
-  var players = "";
 
-  numCards = _.mapObject(game.players,(function(player, playerId){
-
-    if(playerId == game.currentPlayer){
-      currentPlayerUsername = player.username;
-    }
-    players += player.username + ", ";
-
-
-
-    return player.pile.length;
-  }));
-
-
-  _.forEach(game.players,function(player, playerId){
-    console.log(player.username, player.pile.length, game.pile.length);
-  })
-
-  return {
-      numCards: numCards || "You don't have cards yet",
-      currentPlayerUsername: currentPlayerUsername || "Game not started",
-      playersInGame: players,
-      cardsInDeck: game.pile.length,
-  }
 }
 
 io.on('connection', function(socket){
@@ -57,8 +31,8 @@ io.on('connection', function(socket){
       return console.error(e);
     }
     socket.emit('username', id);
-    socket.emit('updateGame', getGameState());
-    socket.broadcast.emit('updateGame', getGameState());
+    socket.emit('updateGame', game.getGameState());
+    socket.broadcast.emit('updateGame', game.getGameState());
   });
 
   //
