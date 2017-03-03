@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image
 } from 'react-native';
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 4; // four-by-four grid
@@ -24,45 +25,63 @@ var BoardView = React.createClass({
   renderTiles(){
     return (
       <View>
-        <View key={1} style={[styles.btile, {
-          left: 1 * CELL_SIZE + CELL_PADDING,
-          top: 0 * CELL_SIZE + CELL_PADDING}]}>
-            <Text style={styles.letter}>A</Text>
-        </View>
+
+          <View key={1} style={[styles.btile, {
+            left: 1 * CELL_SIZE + CELL_PADDING,
+            top: 0 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./duke.png')}>
+            </Image>
+          </View>
+
         <View key={2} style={[styles.btile, {
           left: 2 * CELL_SIZE + CELL_PADDING,
           top: 0 * CELL_SIZE + CELL_PADDING}]}>
-            <Text style={styles.letter}>A</Text>
+          <Image
+            source={require('./duke.png')}>
+          </Image>
         </View>
         <View key={4} style={[styles.btile, {
           left: 0 * CELL_SIZE + CELL_PADDING,
           top: 1 * CELL_SIZE + CELL_PADDING}]}>
-            <Text style={styles.letter}>A</Text>
+          <Image
+            source={require('./duke.png')}>
+          </Image>
         </View>
         <View key={7} style={[styles.btile, {
           left: 3 * CELL_SIZE + CELL_PADDING,
           top: 1 * CELL_SIZE + CELL_PADDING}]}>
-            <Text style={styles.letter}>A</Text>
+          <Image
+            source={require('./duke.png')}>
+          </Image>
         </View>
         <View key={8} style={[styles.btile, {
           left: 0 * CELL_SIZE + CELL_PADDING,
           top: 2 * CELL_SIZE + CELL_PADDING}]}>
-            <Text style={styles.letter}>A</Text>
+          <Image
+            source={require('./duke.png')}>
+          </Image>
         </View>
         <View key={11} style={[styles.btile, {
           left: 3 * CELL_SIZE + CELL_PADDING,
           top: 2 * CELL_SIZE + CELL_PADDING}]}>
-            <Text style={styles.letter}>A</Text>
+          <Image
+            source={require('./duke.png')}>
+          </Image>
         </View>
         <View key={13} style={[styles.btile, {
           left: 1 * CELL_SIZE + CELL_PADDING,
           top: 3 * CELL_SIZE + CELL_PADDING}]}>
-            <Text style={styles.letter}>A</Text>
+          <Image
+            source={require('./duke.png')}>
+          </Image>
         </View>
         <View key={14} style={[styles.btile, {
           left: 2 * CELL_SIZE + CELL_PADDING,
           top: 3 * CELL_SIZE + CELL_PADDING}]}>
-            <Text style={styles.letter}>A</Text>
+          <Image
+            source={require('./duke.png')}>
+          </Image>
         </View>
       </View>
     )
