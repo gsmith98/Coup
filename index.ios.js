@@ -82,6 +82,26 @@ var App = React.createClass({
   }
 });
 
+//not completed, placeholder right now
+var UserCard = React.createClass({
+  getInitialState: function() {
+    return {
+      User: []
+    }
+  },
+  signIn() {
+     var self = this;
+  },
+  render: function() {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+
+      </View>
+      );
+  }
+});
+
+
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 4; // four-by-four grid
 var CELL_SIZE = Math.floor(width * .15); // 20% of the screen width
@@ -98,7 +118,6 @@ var BoardView = React.createClass({
              </View>
            </View>
   },
-
   renderTiles(){
     return (
       <View>

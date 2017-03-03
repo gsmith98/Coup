@@ -24,6 +24,17 @@ io.on('connect', function(socket){
     socket.username = String(username);
   });
 
+  socket.on('roomCheck', function() {
+    if (!socket.username) {
+     return socket.emit('errorMessage', 'Username not set!');
+    }
+    if (socket.room) {
+      socket.leave(socket.room);
+    }
+
+
+   });
+
   socket.on('gameAction', function(action) {
     if (!action) {
       return socket.emit('errorMessage', 'Please Click Action');
@@ -31,10 +42,20 @@ io.on('connect', function(socket){
 
     socket.to(socket.room).emit('gameAction', {
       username: socket.username,
-      action:
+      action: socket.username
     });
 
   })
+
+  socket.on('refreshCard', function(action) {
+
+
+  });
+
+  socket.on('playerLoss', function(action) {
+
+
+  });
 
 });
 
