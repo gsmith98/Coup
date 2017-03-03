@@ -1,28 +1,5 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
-import io from 'socket.io-client';
 import Prompt from 'react-native-prompt';
-// var socketConfig = { path: '/socket' };
-// var socket = new SocketIO('localhost:3000', socketConfig);
-// socket.connect();
-//
-// socket.on('connect', () => {
-//     console.log('Wahey -> connected!');
-// });
-// socket.disconnect();
-//
-// socket.reconnect();
-window.navigator.userAgent = 'ReactNative';
-
-const socket = io('http://localhost:8081', {
-  transports: ['websocket'] // you need to explicitly tell it to use websockets
-});
-
 import {
   AppRegistry,
   StyleSheet,
@@ -35,58 +12,49 @@ import {
   AsyncStorage
 } from 'react-native';
 
-// componentDidMount(){
-//   this.state.socket.on("Base On the Content", (data) => {
-//     console.log(data);
-//     this.setState({
-//
-//
-//     })
-//   })
-// }
+window.navigator.userAgent = "react-native";
+import SocketIOClient from 'socket.io-client';
+
+var Orientation = require('react-native-orientation')
+
+export default class Coup extends Component {
+  constructor(props) {
+    super(props);
+    this.socket = SocketIOClient('http://localhost:8081');
+  }
+  render() {
+    return (  
+      <View>
+        <App socket={this.socket}/>
+      </View>
+    );
+  }
+}
 
 var App = React.createClass({
   getInitialState: function() {
     return {
       roomName: "Praise the jiang",
       username: '',
-      socket: socket
+      socket: this.props.socket
     }
   },
-  componentDidMount: function() {
-    // this.state.socket.on('connect', function() {
-    //   console.log('connected');
-    //   this.setState({
-    //     username: this.state.socket.username
-    //   });
-    //   this.state.socket.emit('username', this.state.socket.username)
-    // }.bind(this));
-    //
-    // this.state.socket.on('errorMessage', function(message) {
-    //   alert(message);
-    // }.bind(this));
-  },
-  signIn(username, event) {
+   signIn(username, event) {
     this.setState({
       promptVisible: false
     })
-    this.state.socket.on('connect', function() {
-      console.log("You are connected")
-      this.setState({
-        username: username
-      });
-      this.state.socket.emit('username', this.state.socket.username)
+    this.state.socket.emit('connect', function () {
+        this.setState({
+          username: username
+        });
 
-      this.props.navigator.push({
-          component: Game,
-          title: "Game Board"
-        })
-
+        this.state.socket.emit('username', this.state.username);
+        this.props.navigator.push({
+            component: Game,
+            title: "Game Board"
+          })
     }.bind(this));
 
-    this.state.socket.on('errorMessage', function(message) {
-      alert(message);
-    }.bind(this));
   },
   render: function() {
     return (
@@ -111,36 +79,108 @@ var App = React.createClass({
   }
 });
 
-export default class Coup extends Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (  
-      <View>
-        <App />
-      </View>
-    );
-  }
-}
+var {width, height} = require('Dimensions').get('window');
+var SIZE = 4; // four-by-four grid
+var CELL_SIZE = Math.floor(width * .15); // 20% of the screen width
+var CELL_PADDING = Math.floor(CELL_SIZE * .05); // 5% of the cell size
+var BORDER_RADIUS = CELL_PADDING * 2;
+var TILE_SIZE = CELL_SIZE - CELL_PADDING * 2;
+var LETTER_SIZE = Math.floor(TILE_SIZE * .75);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+var BoardView = React.createClass({
+  render() {
+    return <View style={styles.bcontainer}>
+             {this.renderTiles()}
+           </View>;
+  },
+
+  renderTiles(){
+    return (
+      <View>
+
+          <View key={1} style={[styles.btile, {
+            left: 1 * CELL_SIZE + CELL_PADDING,
+            top: 0 * CELL_SIZE + CELL_PADDING}]}>
+            <Image
+              source={require('./images/duke.png')}>
+            </Image>
+          </View>
+
+        <View key={2} style={[styles.btile, {
+          left: 2 * CELL_SIZE + CELL_PADDING,
+          top: 0 * CELL_SIZE + CELL_PADDING}]}>
+          <Image
+            source={require('./images/contessa.png')}>
+          </Image>
+        </View>
+        <View key={4} style={[styles.btile, {
+          left: 0 * CELL_SIZE + CELL_PADDING,
+          top: 1 * CELL_SIZE + CELL_PADDING}]}>
+          <Image
+            source={require('./images/assassin.png')}>
+          </Image>
+        </View>
+        <View key={7} style={[styles.btile, {
+          left: 3 * CELL_SIZE + CELL_PADDING,
+          top: 1 * CELL_SIZE + CELL_PADDING}]}>
+          <Image
+            source={require('./images/captain.png')}>
+          </Image>
+        </View>
+        <View key={8} style={[styles.btile, {
+          left: 0 * CELL_SIZE + CELL_PADDING,
+          top: 2 * CELL_SIZE + CELL_PADDING}]}>
+          <Image
+            source={require('./images/ambassador.png')}>
+          </Image>
+        </View>
+        <View key={11} style={[styles.btile, {
+          left: 3 * CELL_SIZE + CELL_PADDING,
+          top: 2 * CELL_SIZE + CELL_PADDING}]}>
+          <Image
+            source={require('./images/coup.png')}>
+          </Image>
+        </View>
+        <View key={13} style={[styles.btile, {
+          left: 1 * CELL_SIZE + CELL_PADDING,
+          top: 3 * CELL_SIZE + CELL_PADDING}]}>
+          <Image
+            source={require('./images/coup.png')}>
+          </Image>
+        </View>
+        <View key={14} style={[styles.btile, {
+          left: 2 * CELL_SIZE + CELL_PADDING,
+          top: 3 * CELL_SIZE + CELL_PADDING}]}>
+          <Image
+            source={require('./images/coup.png')}>
+          </Image>
+        </View>
+      </View>
+    )
+  }
+});
+
+var styles = StyleSheet.create({
+  bcontainer: {
+    width: CELL_SIZE * SIZE,
+    height: CELL_SIZE * SIZE,
+    backgroundColor: 'transparent',
+  },
+  btile: {
+    position: 'absolute',
+    width: TILE_SIZE,
+    height: TILE_SIZE,
+    borderRadius: BORDER_RADIUS,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#BEE1D2',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  letter: {
+    color: '#333',
+    fontSize: LETTER_SIZE,
+    backgroundColor: 'transparent',
   },
 });
+
 
 AppRegistry.registerComponent('Coup', () => Coup);
