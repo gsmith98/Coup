@@ -47,6 +47,10 @@ Player.prototype.isOut = function() {
   return !this.influence.some(x => x.alive);
 };
 
+Player.prototype.hasRole = function(role) {
+  return this.influence.some(x => x.role === role);
+}
+
 //TODO make sure all functions check if game is started
 
 var Game = function() {
@@ -172,8 +176,22 @@ Game.prototype.returnAndReplace = function(username, role) {
   return thePlayer; //TODO return player?
 };
 
+Game.prototype.numPlayers = function() {
+  return this.players.length;
+};
+
+//returns challenge loser AND reshuffles the card if it was revealed
+Game.prototype.whoLostChallenge = function (caller, claimer, claimedCharacter) {
+  var loser = game.getPlayer(claimer).hasRole(claimedCharacter) ? caller : claimer;
+  if (loser === caller) {
+    this.returnAndReplace(claimer, claimedCharacter); //return the revealed card
+  }
+  return loser;
+};
+
 //TODO EXCHANGE
-//TODO hasRole (for bs calls) (and refactor other code to use it)
+//TODO and refactor other code to use hasRole
+//TODO get perspective Game state
 
 
 // module.exports = Game; //TODO uncomment

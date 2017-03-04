@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Prompt from 'react-native-prompt';
+import Button from 'apsl-react-native-button'
 import {
   AppRegistry,
   StyleSheet,
@@ -57,7 +58,8 @@ var Login = React.createClass({
     this.state.socket.emit('username', this.state.username);
     this.props.navigator.push({
         component: BoardView,
-        title: "Game Board"
+        title: "Game Board",
+        passProps: {username: this.state.username}
     })
   },
   render: function() {
@@ -81,26 +83,6 @@ var Login = React.createClass({
   }
 });
 
-//not completed, placeholder right now
-var UserCard = React.createClass({
-  getInitialState: function() {
-    return {
-      User: []
-    }
-  },
-  signIn() {
-     var self = this;
-  },
-  render: function() {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-      </View>
-      );
-  }
-});
-
-
 // btile
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 4; // four-by-four grid
@@ -122,11 +104,13 @@ var LETTER_SIZE1 = Math.floor(TILE_SIZE1 * .75);
 var BoardView = React.createClass({
   getInitialState: function() {
     return {
-      username: [],
+      username: this.props.username,
       coin: [],
-      userCard: [],
-
+      userCard: []
     }
+  },
+  performAction(actionObject){
+    this.state.socket.emit('action', actionObject)
   },
   render() {
     return <View style={styles.container}>
@@ -135,7 +119,6 @@ var BoardView = React.createClass({
              </View>
            </View>
   },
-
   renderTiles(){
     return (
       <View style={styles.container}>
@@ -144,56 +127,56 @@ var BoardView = React.createClass({
             left: 1 * CELL_SIZE + CELL_PADDING,
             top: 0 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/duke1.png')}>
+              source={require('./imagesExporter')}>
             </Image>
           </View>
           <View key={2} style={[styles.btile, {
             left: 2 * CELL_SIZE + CELL_PADDING,
             top: 0 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/contessa1.png')}>
+              source={require('./imagesExporter')}>
             </Image>
           </View>
           <View key={4} style={[styles.btile, {
             left: 0 * CELL_SIZE + CELL_PADDING,
             top: 1 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/assassin1.png')}>
+              source={require('./imagesExporter')}>
             </Image>
           </View>
           <View key={7} style={[styles.btile, {
             left: 3 * CELL_SIZE + CELL_PADDING,
             top: 1 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/captain1.png')}>
+              source={require('./imagesExporter')}>
             </Image>
           </View>
           <View key={8} style={[styles.btile, {
             left: 0 * CELL_SIZE + CELL_PADDING,
             top: 2 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/ambassador1.png')}>
+              source={require('./imagesExporter')}>
             </Image>
           </View>
           <View key={11} style={[styles.btile, {
             left: 3 * CELL_SIZE + CELL_PADDING,
             top: 2 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/coup1.png')}>
+              source={require('./imagesExporter')}>
             </Image>
           </View>
           <View key={13} style={[styles.btile, {
             left: 1 * CELL_SIZE + CELL_PADDING,
             top: 3 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/coup1.png')}>
+              source={require('./imagesExporter')}>
             </Image>
           </View>
           <View key={14} style={[styles.btile, {
             left: 2 * CELL_SIZE + CELL_PADDING,
             top: 3 * CELL_SIZE + CELL_PADDING}]}>
             <Image
-              source={require('./images/coup1.png')}>
+              source={require('./imagesExporter')}>
             </Image>
           </View>
         </View>
@@ -202,10 +185,31 @@ var BoardView = React.createClass({
           <View key={1} style={[styles.ctile, {
             left: .2 * CELL_SIZE + CELL_PADDING,
             top: 0 * CELL_SIZE + CELL_PADDING}]}>
-            <Text>
-            Lisa - taxed (6 coins)
-            Graham - stole from Junjie (8 coins)
-            </Text>
+
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Taxes
+              </Button>
+
+              <Button onPress={this.income} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Income
+              </Button>
+
+              <Button onPress={this.pressLogin} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              asdsad
+              </Button>
+
+              <Button onPress={this.pressLogin} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Hello!
+              </Button>
+
+              <Button onPress={this.pressLogin} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Hello!
+              </Button>
+
+              <Button onPress={this.pressLogin} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Hello!
+              </Button>
+
           </View>
         </View>
 
@@ -216,7 +220,6 @@ var BoardView = React.createClass({
 
 
 var styles = StyleSheet.create({
-
   bcontainer: {
     width: CELL_SIZE * 7.8,
     height: CELL_SIZE * SIZE,
