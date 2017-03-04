@@ -86,7 +86,7 @@ io.on('connection', function(socket){
   });
 
   function askToLoseInfluence(losingPlayer, callback) {
-    socket.emit(losingPlayer, {loseInfluence: true}); //TODO revisit the sent object
+    socket.emit(losingPlayer,null);
   }
 
     //
@@ -131,6 +131,10 @@ io.on('connection', function(socket){
     socket.emit('username', id);
     socket.emit('updateGame', game.getPlayerPerspective(username));
   });
+
+  socket.on('requestState', () => {
+    socket.emit(socketUser + "newGameStatus", game.getPlayerPerspective(socketUser));
+  })
 
   //
   // socket.on('roomCheck', function() {
