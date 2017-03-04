@@ -101,6 +101,7 @@ var UserCard = React.createClass({
 });
 
 
+// btile
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 4; // four-by-four grid
 var CELL_SIZE = Math.floor(width * .125); // 20% of the screen width
@@ -109,7 +110,24 @@ var BORDER_RADIUS = CELL_PADDING * 2;
 var TILE_SIZE = CELL_SIZE - CELL_PADDING * 2;
 var LETTER_SIZE = Math.floor(TILE_SIZE * .75);
 
+// ctile
+var {width, height} = require('Dimensions').get('window');
+var SIZE = 4;
+var CELL_SIZE1 =  Math.floor(width * .30);
+var CELL_PADDING1 = Math.floor(CELL_SIZE1 * .05);
+var BORDER_RADIUS1 = CELL_PADDING1 * 2;
+var TILE_SIZE1 = CELL_SIZE1 - CELL_PADDING1 * 2;
+var LETTER_SIZE1 = Math.floor(TILE_SIZE1 * .75);
+
 var BoardView = React.createClass({
+  getInitialState: function() {
+    return {
+      username: [],
+      coin: [],
+      userCard: [],
+
+    }
+  },
   render() {
     return <View style={styles.container}>
             <View style={styles.bcontainer}>
@@ -120,7 +138,6 @@ var BoardView = React.createClass({
 
   renderTiles(){
     return (
-
       <View style={styles.container}>
         <View style={{marginTop: 37.5, flex:.5}}>
           <View key={1} style={[styles.btile, {
@@ -182,7 +199,7 @@ var BoardView = React.createClass({
         </View>
 
         <View style={{flex:.5}}>
-          <View key={1} style={[styles.btile, {
+          <View key={1} style={[styles.ctile, {
             left: .2 * CELL_SIZE + CELL_PADDING,
             top: 0 * CELL_SIZE + CELL_PADDING}]}>
             <Text>
@@ -199,14 +216,9 @@ var BoardView = React.createClass({
 
 
 var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    backgroundColor: '#644B62',
-  },
+
   bcontainer: {
-    width: CELL_SIZE * SIZE,
+    width: CELL_SIZE * 7.8,
     height: CELL_SIZE * SIZE,
     backgroundColor: 'transparent',
   },
@@ -216,7 +228,16 @@ var styles = StyleSheet.create({
     height: TILE_SIZE,
     borderRadius: BORDER_RADIUS,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: '#BEE1D2',
+  },
+  ctile: {
+    position: 'absolute',
+    width: 1.5*TILE_SIZE1,
+    height: 2*TILE_SIZE1,
+    borderRadius: BORDER_RADIUS1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#BEE1D2',
   },
   letter: {
