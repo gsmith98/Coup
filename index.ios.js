@@ -101,20 +101,30 @@ var LETTER_SIZE1 = Math.floor(TILE_SIZE1 * .75);
 var BoardView = React.createClass({
   getInitialState: function() {
     return {
+      playerObjects: [],
       username: this.props.username,
-      coin: [],
-      userCard: [],
       socket: this.props.socket
     }
   },
   componentDidMount(){
-    console.log('componentDidMount is mounted!')
-    this.state.socket.on('BSchance', (data) => {
+    this.state.socket.on(this.state.username + 'newGameStatus', (data) => {
+      console.log("User Perspective +++++++++" + data)
+      this.setState({
+        playerObjects: data
+      })
+    });
+
+    this.state.socket.emit('requestState', null);
+
+    this.state.socket.on('BSchance', () => {
         Alert.alert('Call Bullshit?',
                     null,
                   [{text: 'no', onPress: this.bsresponse.bind(this, false)},
                   {text: 'yes', onPress: this.bsresponse.bind(this, true)}]
         );
+    });
+    this.state.socket.on(this.state.username, (data) => {
+      //TODO need to pick an influence card to lose
     });
    },
   performAction(actionObject){
@@ -135,9 +145,6 @@ var BoardView = React.createClass({
   renderTiles(){
     return (
       <View style={styles.container}>
-
-
-
         <View style={{marginTop: 37.5, flex:.5}}>
           <View key={1} style={[styles.btile, {
             left: 1 * CELL_SIZE + CELL_PADDING,
