@@ -20,10 +20,21 @@ import SocketIOClient from 'socket.io-client';
 
 var Orientation = require('react-native-orientation')
 
+var picture = {
+    Duke: require('./images/duke1.png'),
+    Contessa: require('./images/contessa1.png'),
+    Captain: require('./images/captain1.png'),
+    Assassin: require('./images/assassin1.png'),
+    Facedown: require('./images/coup1.png'),
+    Ambassador: require('./images/ambassador1.png')
+};
+
 export default class Coup extends Component {
   constructor(props) {
     super(props);
-    this.socket = SocketIOClient('http://localhost:8080');
+    this.socket = SocketIOClient('http://localhost:8080', {
+      transports: ['websocket']
+    })
   }
   render() {
     return (  
@@ -42,7 +53,9 @@ var Login = React.createClass({
   getInitialState: function() {
     return {
       username: '',
-      socket: SocketIOClient('http://localhost:8080')
+      socket: SocketIOClient('http://localhost:8080', {
+        transports: ['websocket']
+      })
     }
   },
    signIn(username) {
@@ -61,21 +74,25 @@ var Login = React.createClass({
   },
   render: function() {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontSize: 20 }} onPress={() => this.setState({ promptVisible: true })}>
-            Join the Room
-          </Text>
-        <Prompt
-            title="What is your game name"
-            placeholder="Start typing"
-            defaultValue=""
-            visible={ this.state.promptVisible }
-            onCancel={ () => this.setState({
-              promptVisible: false
-            })}
-            onSubmit={ (value) => this.signIn(value)}
-          />
-      </View>
+
+          <Image
+          source={require('./images/landing.jpeg')}
+          style={{width:null, height:null, flex: 1, opacity: 0.75, justifyContent: 'center', alignItems: 'center'}}
+          resizeMode = "stretch">
+          <Button style={{ alignSelf:'center', marginTop:20, padding:10, height:45, width: 300, overflow:'hidden', borderRadius:12, backgroundColor: 'white'}} textStyle={{fontSize: 18}} onPress={() => this.setState({ promptVisible: true })}>Join the games</Button>
+            <Prompt
+                title="What is your game name"
+                placeholder="Start typing"
+                defaultValue=""
+                visible={ this.state.promptVisible }
+                onCancel={ () => this.setState({
+                  promptVisible: false
+                })}
+                onSubmit={ (value) => this.signIn(value)}
+              />
+
+          </Image>
+
       );
   }
 });
@@ -103,14 +120,18 @@ var BoardView = React.createClass({
     return {
       playerObjects: [],
       username: this.props.username,
+      coin: 2,
       socket: this.props.socket
     }
   },
   componentDidMount(){
     this.state.socket.on(this.state.username + 'newGameStatus', (data) => {
-      console.log("User Perspective +++++++++" + data)
+      var userInfo = data.filter((x) => {
+        return x.username===this.state.username
+      })
       this.setState({
-        playerObjects: data
+        playerObjects: data,
+        coin: userInfo.coins
       })
     });
 
@@ -128,11 +149,9 @@ var BoardView = React.createClass({
     });
    },
   performAction(actionObject){
-    console.log("Performed an action");
     this.state.socket.emit('action', actionObject)
   },
   bsresponse(resp){
-      console.log("aaaaaaaaaaaaaaaaaaaaa" + resp)
     this.state.socket.emit('BS', {username: this.state.username, bs: resp})
   },
   render() {
@@ -142,65 +161,136 @@ var BoardView = React.createClass({
              </View>
            </View>
   },
+  performActionToOther(actionObject){
+    self = this;
+    var userInfo = this.state.playerObjects.filter((x) => {
+      return x.username!==self.state.username
+    })
+    console.log(" i am here!!!! " + userInfo)
+    Alert.alert('Who to targets',
+                null,
+                [userInfo.map((x)=>{
+                   return {text: x.username, onPress: self.state.socket.emit('action', actionObject)}
+                 })]
+    );
+  },
   renderTiles(){
+    var otherUser = this.state.playerObjects.filter((x) => {
+      return x.username!==this.state.username
+    })
+    var currentUser = this.state.playerObjects.filter((x) => {
+      return x.username===this.state.username
+    })
+    if(currentUser[0]){
+      console.log(currentUser[0] + "asdasdsadasdasasszxxzcxczcxczcz")
+      var currentcard0 = currentUser[0].influence[0].role.toString();
+      var currentcard1 = currentUser[0].influence[1].role.toString();
+    }
+    if(otherUser[0]){
+      console.log(otherUser[0] + "asdasdsadasdasasszxxzcxczcxczcz")
+      var card0 = otherUser[0].influence[0].role.toString();
+      var card1 = otherUser[0].influence[1].role.toString();
+    }
+    if(otherUser[1]){
+      var card2 = otherUser[1].influence[0].role.toString();
+      var card3 = otherUser[1].influence[1].role.toString();
+    }
+    if(otherUser[2]){
+      var card4 = otherUser[2].influence[0].role.toString();
+      var card5 = otherUser[2].influence[1].role.toString();
+    }
+
     return (
       <View style={styles.container}>
         <View style={{marginTop: 37.5, flex:.5}}>
           <View key={1} style={[styles.btile, {
             left: 1 * CELL_SIZE + CELL_PADDING,
             top: 0 * CELL_SIZE + CELL_PADDING}]}>
-            <Image
-              source={require('./imagesExporter')}>
-            </Image>
+            {otherUser[0] ? (
+              <Image
+                source={picture[card0]}>
+              </Image>
+            ) : ( <Image
+              source={picture.Facedown}>
+            </Image> ) }
           </View>
           <View key={2} style={[styles.btile, {
             left: 2 * CELL_SIZE + CELL_PADDING,
             top: 0 * CELL_SIZE + CELL_PADDING}]}>
-            <Image
-              source={require('./imagesExporter')}>
-            </Image>
+            {otherUser[0] ? (
+              <Image
+                source={picture[card1]}>
+              </Image>
+            ) : ( <Image
+              source={picture.Facedown}>
+            </Image> ) }
           </View>
+
           <View key={4} style={[styles.btile, {
             left: 0 * CELL_SIZE + CELL_PADDING,
             top: 1 * CELL_SIZE + CELL_PADDING}]}>
-            <Image
-              source={require('./imagesExporter')}>
-            </Image>
+            {otherUser[1] ? (
+              <Image
+                source={picture[card2]}>
+              </Image>
+            ) : ( <Image
+              source={picture.Facedown}>
+            </Image> ) }
           </View>
           <View key={7} style={[styles.btile, {
             left: 3 * CELL_SIZE + CELL_PADDING,
             top: 1 * CELL_SIZE + CELL_PADDING}]}>
-            <Image
-              source={require('./imagesExporter')}>
-            </Image>
+            {otherUser[1] ? (
+              <Image
+                source={picture[card3]}>
+              </Image>
+            ) : ( <Image
+              source={picture.Facedown}>
+            </Image> ) }
           </View>
           <View key={8} style={[styles.btile, {
             left: 0 * CELL_SIZE + CELL_PADDING,
             top: 2 * CELL_SIZE + CELL_PADDING}]}>
-            <Image
-              source={require('./imagesExporter')}>
-            </Image>
+            {otherUser[2] ? (
+              <Image
+                source={picture[card3]}>
+              </Image>
+            ) : ( <Image
+              source={picture.Facedown}>
+            </Image> ) }
           </View>
           <View key={11} style={[styles.btile, {
             left: 3 * CELL_SIZE + CELL_PADDING,
             top: 2 * CELL_SIZE + CELL_PADDING}]}>
-            <Image
-              source={require('./imagesExporter')}>
-            </Image>
+            {otherUser[3] ? (
+              <Image
+                source={picture[card4]}>
+              </Image>
+            ) : ( <Image
+              source={picture.Facedown}>
+            </Image> ) }
           </View>
           <View key={13} style={[styles.btile, {
             left: 1 * CELL_SIZE + CELL_PADDING,
             top: 3 * CELL_SIZE + CELL_PADDING}]}>
-            <Image
-              source={require('./imagesExporter')}>
-            </Image>
+            {currentUser[0] ? (
+              <Image
+                source={picture[currentcard0]}>
+              </Image>
+            ) : ( <Image
+              source={picture.Facedown}>
+            </Image> ) }
           </View>
           <View key={14} style={[styles.btile, {
             left: 2 * CELL_SIZE + CELL_PADDING,
             top: 3 * CELL_SIZE + CELL_PADDING}]}>
-            <Image
-              source={require('./imagesExporter')}>
-            </Image>
+            {currentUser[0] ? (
+              <Image
+                source={picture[currentcard1]}>
+              </Image>
+            ) : ( <Image
+              source={picture.Facedown}>
+            </Image> ) }
           </View>
         </View>
 
@@ -217,21 +307,29 @@ var BoardView = React.createClass({
               Income
               </Button>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "Assassin"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Assassin
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN_AID"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Foreign Aid
               </Button>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Hello!
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "AMBASSADOR"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Ambassador/Exchange 2 cards
               </Button>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Hello!
+              <Button onPress={this.performActionToOther.bind(this, {player: this.state.username, action: "STEAL"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Steal
               </Button>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Hello!
-              </Button>
+              {(this.state.coins >= 3) ? (
+                <Button onPress={this.performActionToOther.bind(this, {player: this.state.username, action: "ASSASSIN"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+                Assassin
+                </Button>
+                ) : null}
+
+              {(this.state.coins >= 7) ? (
+                <Button onPress={this.performActionToOther.bind(this, {player: this.state.username, action: "COUP"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+                Coup
+                </Button>
+                ) : null}
 
           </View>
         </View>
@@ -277,6 +375,15 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     backgroundColor: '#644B62',
+  },
+  landborder: {
+    width: width,
+    marginTop: 65,
+    height: height - 65,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderWidth: 30,
+    borderColor: 'maroon',
   },
 });
 
