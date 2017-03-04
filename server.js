@@ -88,10 +88,6 @@ io.on('connection', function(socket){
     // characterSpecificAction("Don", "Assassin", blockableAction("Don", "Assassin", "Junjie", assassinateSuccess, assassinateCalledOut), assassinateCalledOut);
     //
 
-
-
-
-
   socket.on('username', function(username) {
     try {
       var id = game.addPlayer(data);
@@ -101,8 +97,8 @@ io.on('connection', function(socket){
       return console.error(e);
     }
     socket.emit('username', id);
-    socket.emit('updateGame', getGameState());
-    socket.broadcast.emit('updateGame', getGameState());
+    socket.emit('updateGame', game.getGameState());
+    socket.broadcast.emit('updateGame', game.getGameState());
   });
 
   //
