@@ -16,56 +16,79 @@ app.get('/', function(req, res) {
 var Game = require('./game');
 var game = new Game();
 
+var responses;
+var actingPlayer;
+var claimedCharacter;
+var actionCallback;
+var rejectedCallback;
+
+function resetSharedVariables() {
+  responses = [];
+  actingPlayer = null;
+  claimedCharacter = null;
+  actionCallback = null;
+  rejectedCallback = null;
+}
+
+resetSharedVariables();
 
 io.on('connection', function(socket){
   console.log('connected');
-  function askToLoseInfluence(losingPlayer, callback) {
-    socket.emit(losingPlayer, {loseInfluence: true}); //TODO revisit the sent object
-    socket.on("LostInfluence", (data) => {
-      game.getPlayer(losingPlayer).loseInfluence(data.chosenRole);
-      callback();
-    });
-  }
+  var socketUser; //the user who sent whatever event is being handled in here //TODO refactor to use
 
-  //the callback is whatever should happen after all responses are collected
-  function characterSpecificAction(actingPlayer, claimedCharacter, actionCallback, rejectedCallback) {
+  function characterSpecificAction(actingPlayerArg, claimedCharacterArg, actionCallbackArg, rejectedCallbackArg) {
     //emit bs opportunity to all other players (broadcast)
     console.log("11111111111111");
+    actingPlayer = actingPlayerArg;
+    claimedCharacter = claimedCharacterArg;
+    actionCallback = actionCallbackArg;
+    rejectedCallback = rejectedCallbackArg;
     socket.broadcast.emit("BSchance", {actingPlayer, claimedCharacter});
-    var responses = [];
-    //await all responses
-    socket.on('BS', (data) => {
-        console.log(data);
-        responses.push(data);
-        //once all responses are gathered
-        if (responses.length === game.numPlayers() - 1) {
-          //check for the first positive response if any
-          if (!responses.some(x => {
-            if (!x.bs) {
-              console.log("Not Bullshit");
-              return false;
-            } else {
-              //handle BS call
-              console.log("Yes to Bullshit");
-              var loser = game.whoLostChallenge(x.username, actingPlayer, claimedCharacter);
-              askToLoseInfluence(loser, () => {
-                if (loser === actingPlayer) {
-                  console.log("rejeced call back");
-                  rejectedCallback();
-                } else {
-                  console.log("Yes to action call back!");
-                  actionCallback()
-                }
-              });
-              return true
-            }
-          })) {
-            console.log("No Bullshit action call back");
-              actionCallback();
+  };
+
+  socket.on('BS', (data) => {
+      console.log(data);
+      responses.push(data);
+      //once all responses are gathered
+      if (responses.length === game.numPlayers() - 1) {
+        //check for the first positive response if any
+        if (!responses.some(x => {
+          if (!x.bs) {
+            console.log("Not Bullshit");
+            return false;
+          } else {
+            //handle BS call
+            console.log("Yes to Bullshit");
+            var loser = game.whoLostChallenge(x.username, actingPlayer, claimedCharacter);
+            askToLoseInfluence(loser, () => {
+              if (loser === actingPlayer) {
+                console.log("rejeced call back");
+                rejectedCallback();
+              } else {
+                console.log("Yes to action call back!");
+                actionCallback()
+              }
+            });
+            return true
           }
+        })) {
+          console.log("No Bullshit action call back");
+            actionCallback();
         }
-      })
-    };
+        resetSharedVariables();
+      }
+    })
+
+
+  socket.on("LostInfluence", (data) => {
+    game.getPlayer(socketUser).loseInfluence(data.chosenRole);
+    callback();
+  });
+
+  function askToLoseInfluence(losingPlayer, callback) {
+    socket.emit(losingPlayer, {loseInfluence: true}); //TODO revisit the sent object
+  }
+
     //
     // //Examples!!!!
     //
@@ -100,6 +123,7 @@ io.on('connection', function(socket){
     try {
       var id = game.addPlayer(username);
       socket.playerId = id;
+      socketUser = username;
     } catch(e) {
       socket.emit('username', false);
       return console.error(e);
