@@ -206,23 +206,23 @@ var BoardView = React.createClass({
               Taxes
               </Button>
 
-              <Button onPress={this.income} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "INCOME"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
               Income
               </Button>
 
-              <Button onPress={this.pressLogin} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              asdsad
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "Assassin"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              Assassin
               </Button>
 
-              <Button onPress={this.pressLogin} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
               Hello!
               </Button>
 
-              <Button onPress={this.pressLogin} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
               Hello!
               </Button>
 
-              <Button onPress={this.pressLogin} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
               Hello!
               </Button>
 
