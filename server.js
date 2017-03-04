@@ -36,7 +36,7 @@ io.on('connection', function(socket){
         console.log(data);
         responses.push(data);
         //once all responses are gathered
-        if (responses.length === game.numPlayers() - 1) { //TODO write game.numPlayers()
+        if (responses.length === game.numPlayers() - 1) {
           //check for the first positive response if any
           if (!responses.some(x => {
             if (!x.bs) {
