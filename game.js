@@ -1,6 +1,6 @@
 "use strict";
 
-//var _ = require('underscore'); //TODO add to dependencies //TODO uncomment
+var _ = require('underscore'); //TODO add to dependencies //TODO uncomment
 
 const ROLES = ["Duke", "Assassin", "Captain", "Ambassador", "Contessa"];
 const MAX_PLAYERS = 4; //TODO change to 6
@@ -182,7 +182,7 @@ Game.prototype.numPlayers = function() {
 
 //returns challenge loser AND reshuffles the card if it was revealed
 Game.prototype.whoLostChallenge = function(caller, claimer, claimedCharacter) {
-  var loser = game.getPlayer(claimer).hasRole(claimedCharacter) ? caller : claimer;
+  var loser = this.getPlayer(claimer).hasRole(claimedCharacter) ? caller : claimer;
   if (loser === caller) {
     this.returnAndReplace(claimer, claimedCharacter); //return the revealed card
   }
@@ -210,4 +210,4 @@ Game.prototype.getPlayerPerspective = function(viewer) {
 //TODO and refactor other code to use hasRole
 
 
-// module.exports = Game; //TODO uncomment
+module.exports = Game; //TODO uncomment

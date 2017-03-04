@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   NavigatorIOS,
   ListView,
+  Alert,
   AsyncStorage,
   Image
 } from 'react-native';
@@ -22,7 +23,7 @@ var Orientation = require('react-native-orientation')
 export default class Coup extends Component {
   constructor(props) {
     super(props);
-    this.socket = SocketIOClient('http://localhost:8081');
+    this.socket = SocketIOClient('http://localhost:8080');
   }
   render() {
     return (  
@@ -41,25 +42,21 @@ var Login = React.createClass({
   getInitialState: function() {
     return {
       username: '',
-      socket: SocketIOClient('http://localhost:8081')
+      socket: SocketIOClient('http://localhost:8080')
     }
   },
-  componentDidMount(){
-    this.state.socket.on('connect', function() {
-     console.log('connected');
-    });
-   },
-   signIn(username, event) {
+   signIn(username) {
     var self = this;
     this.setState({
       promptVisible: false,
       username: username
     })
-    this.state.socket.emit('username', this.state.username);
+    console.log("signing in!")
+    this.state.socket.emit('username', username);
     this.props.navigator.push({
         component: BoardView,
         title: "Game Board",
-        passProps: {username: this.state.username}
+        passProps: {username: username, socket: this.state.socket}
     })
   },
   render: function() {
@@ -106,11 +103,27 @@ var BoardView = React.createClass({
     return {
       username: this.props.username,
       coin: [],
-      userCard: []
+      userCard: [],
+      socket: this.props.socket
     }
   },
+  componentDidMount(){
+    console.log('componentDidMount is mounted!')
+    this.state.socket.on('BSchance', (data) => {
+        Alert.alert('Call Bullshit?',
+                    null,
+                  [{text: 'no', onPress: this.bsresponse.bind(this, false)},
+                  {text: 'yes', onPress: this.bsresponse.bind(this, true)}]
+        );
+    });
+   },
   performAction(actionObject){
+    console.log("Performed an action");
     this.state.socket.emit('action', actionObject)
+  },
+  bsresponse(resp){
+      console.log("aaaaaaaaaaaaaaaaaaaaa" + resp)
+    this.state.socket.emit('BS', {username: this.state.username, bs: resp})
   },
   render() {
     return <View style={styles.container}>
@@ -122,6 +135,9 @@ var BoardView = React.createClass({
   renderTiles(){
     return (
       <View style={styles.container}>
+
+
+
         <View style={{marginTop: 37.5, flex:.5}}>
           <View key={1} style={[styles.btile, {
             left: 1 * CELL_SIZE + CELL_PADDING,
