@@ -15,38 +15,82 @@ app.get('/', function(req, res) {
 var Game = require('./game');
 var game = new Game();
 
-function getGameState(){
-  var numCards = {};
-  var currentPlayerUsername;
-  var players = "";
-
-  numCards = _.mapObject(game.players,(function(player, playerId){
-
-    if(playerId == game.currentPlayer){
-      currentPlayerUsername = player.username;
-    }
-    players += player.username + ", ";
-
-
-
-    return player.pile.length;
-  }));
-
-
-  _.forEach(game.players,function(player, playerId){
-    console.log(player.username, player.pile.length, game.pile.length);
-  })
-
-  return {
-      numCards: numCards || "You don't have cards yet",
-      currentPlayerUsername: currentPlayerUsername || "Game not started",
-      playersInGame: players,
-      cardsInDeck: game.pile.length,
-  }
-}
 
 io.on('connection', function(socket){
   console.log('connected');
+  function askToLoseInfluence(losingPlayer, callback) {
+    socket.emit(losingPlayer, {loseInfluence: true}); //TODO revisit the sent object
+    socket.on("LostInfluence", (data) => {
+      game.getPlayer(losingPlayer).loseInfluence(data.chosenRole);
+      callback();
+    });
+  }
+
+  //the callback is whatever should happen after all responses are collected
+  function characterSpecificAction(actingPlayer, claimedCharacter, actionCallback, rejectedCallback) {
+    //emit bs opportunity to all other players (broadcast)
+    socket.broadcast.emit("BSchance", {actingPlayer, claimedCharacter});
+    var responses = [];
+    //await all responses
+    socket.on('BS', (data) => {
+        console.log(data);
+        responses.push(data);
+        //once all responses are gathered
+        if (responses.length === game.numPlayers() - 1) { //TODO write game.numPlayers()
+          //check for the first positive response if any
+          if (!responses.some(x => {
+            if (!x.bs) {
+              return false;
+            } else {
+              //handle BS call
+              var loser = game.whoLostChallenge(x.username, actingPlayer, claimedCharacter);
+              askToLoseInfluence(loser, () => {
+                if (loser === actingPlayer) {
+                  rejectedCallback();
+                } else {
+                  actionCallback()
+                }
+              });
+              return true
+            }
+          })) {
+              actionCallback();
+          }
+        }
+      }
+    });
+    //
+    // //Examples!!!!
+    //
+    // //Example when Lisa Taxes
+    // function taxSuccess() {
+    //   game.takeAction({player: "Lisa", action: "TAX"});
+    //   game.nextPlayer();
+    // };
+    // function taxCalledOut() {
+    //   game.nextPlayer();
+    // };
+    // characterSpecificAction("Lisa", "Duke", taxSuccess, taxCalledOut)
+    //
+    // //Example when Don Assassinates Junjie
+    // function assassinateSuccess() {
+    //   game.takeAction({player: "Don", action: "ASSASSINATE", targetPlayer: "Junjie"}); //pays 3 coins
+    //   askToLoseInfluence("Junjie", () => { //causes death
+    //     game.nextPlayer(); //moves on
+    //   });
+    // }
+    //
+    // function assassinateCalledOut() {
+    //   game.takeAction({player: "Don", action: "ASSASSINATE", targetPlayer: "Junjie"});  //pays 3 coins
+    //   game.nextPlayer(); //moves on
+    // }
+    //
+    // characterSpecificAction("Don", "Assassin", blockableAction("Don", "Assassin", "Junjie", assassinateSuccess, assassinateCalledOut), assassinateCalledOut);
+    //
+
+
+
+
 
   socket.on('username', function(username) {
     try {
