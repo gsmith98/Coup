@@ -181,7 +181,7 @@ Game.prototype.numPlayers = function() {
 };
 
 //returns challenge loser AND reshuffles the card if it was revealed
-Game.prototype.whoLostChallenge = function (caller, claimer, claimedCharacter) {
+Game.prototype.whoLostChallenge = function(caller, claimer, claimedCharacter) {
   var loser = game.getPlayer(claimer).hasRole(claimedCharacter) ? caller : claimer;
   if (loser === caller) {
     this.returnAndReplace(claimer, claimedCharacter); //return the revealed card
@@ -189,9 +189,25 @@ Game.prototype.whoLostChallenge = function (caller, claimer, claimedCharacter) {
   return loser;
 };
 
+Game.prototype.getPlayerPerspective = function(viewer) {
+  return this.players.map(player => {
+    //function that takes a player and returns a player with hidden alive cards
+    var copy = Object.assign({}, player);
+    if (copy.username !== viewer) {
+      copy.influence = copy.influence.map(card => {
+        var cardCopy = Object.assign({}, card);
+        if (cardCopy.alive) {
+          cardCopy.role = "Facedown";
+        }
+        return cardCopy;
+      });
+    }
+    return copy;
+  });
+}
+
 //TODO EXCHANGE
 //TODO and refactor other code to use hasRole
-//TODO get perspective Game state
 
 
 // module.exports = Game; //TODO uncomment
