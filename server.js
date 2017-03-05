@@ -28,12 +28,12 @@ io.on('connection', function(socket){
   }
 
   function performAction(action) {
-    console.log("performAction called with action " action.action);
+    console.log("performAction called with action ", action.action);
     game.takeAction(action);
     game.nextPlayer();
   }
 
-  var BSables = [
+  var BSables = {
     "TAX": {
       allowed: performAction,
       disallowed: moveOn
@@ -51,11 +51,11 @@ io.on('connection', function(socket){
         performAction(action);
       }
     }
-  ];
+  };
 
   var actionToCharacter = {
-    "TAX": "DUKE",
-    "STEAL": "CAPTAIN"
+    "TAX": "Duke",
+    "STEAL": "Captain"
   }
 
   //// characterSpecificAction(action.player, "Duke", "takeActionAndMoveOn", "moveOn", actionObj);
@@ -81,7 +81,7 @@ io.on('connection', function(socket){
             //handle BS call
             console.log("Yes to Bullshit");
             var loser = game.whoLostChallenge(x.username, x.action.player, actionToCharacter[x.action.action]);
-            askToLoseInfluence(loser, () => {
+            askToLoseInfluence(loser, () => { //TODO make work
               if (loser === actingPlayer) {
                 console.log("rejected call back");
                 BSables[x.action.action].disallowed();
@@ -91,7 +91,7 @@ io.on('connection', function(socket){
               }
             });
             return true
-          }
+          }s
         })) {
           console.log("No Bullshit action call back");
           BSables[data.action.action].allowed(data.action);
@@ -107,6 +107,7 @@ io.on('connection', function(socket){
   });
 
   function askToLoseInfluence(losingPlayer, callback) {
+    console.log("lossing player has lose: ", losingPlayer);
     socket.emit(losingPlayer,null);
   }
 
@@ -177,7 +178,7 @@ io.on('connection', function(socket){
       return socket.emit('errorMessage', 'Please Click Action');
     }
 
-    characterSpecificAction(actionObj);
+    characterSpecificAction(action);
 
 
   })

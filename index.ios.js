@@ -132,6 +132,7 @@ var BoardView = React.createClass({
       var userInfo = data.filter((x) => {
         return x.username===this.state.username
       })
+      console.log("I am this user: ", userInfo)
       this.setState({
         playerObjects: data,
         coin: userInfo.coins
@@ -140,11 +141,11 @@ var BoardView = React.createClass({
 
     this.state.socket.emit('requestState', null);
 
-    this.state.socket.on('BSchance', () => {
+    this.state.socket.on('BSchance', (data) => {
         Alert.alert('Call Bullshit?',
                     null,
-                  [{text: 'no', onPress: this.bsresponse.bind(this, false)},
-                  {text: 'yes', onPress: this.bsresponse.bind(this, true)}]
+                  [{text: 'no', onPress: this.bsresponse.bind(this, false, data)},
+                  {text: 'yes', onPress: this.bsresponse.bind(this, true, data)}]
         );
     });
     this.state.socket.on(this.state.username, (data) => {
@@ -154,8 +155,8 @@ var BoardView = React.createClass({
   performAction(actionObject){
     this.state.socket.emit('action', actionObject)
   },
-  bsresponse(resp){
-    this.state.socket.emit('BS', {username: this.state.username, bs: resp})
+  bsresponse(resp, data){
+    this.state.socket.emit('BS', {username: this.state.username, bs: resp, action: data})
   },
   render() {
     return <View style={styles.container}>
@@ -279,6 +280,7 @@ var BoardView = React.createClass({
             {currentUser[0] ? (
               <Image
                 source={picture[currentcard1]}>
+               <Text> {this.state.coin} </Text>
               </Image>
             ) : ( <Image
               source={picture.Facedown}>
