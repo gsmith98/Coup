@@ -189,6 +189,10 @@ var BoardView = React.createClass({
         }
       }
     });
+
+    this.state.socket.on("errorMessage", (msg) => {
+      this.setState({message: msg});
+    });
    },
   performAction(actionObject){
     this.state.socket.emit('action', actionObject)

@@ -32,12 +32,12 @@ io.on('connection', function(socket){
       var id = game.addPlayer(username);
       socket.playerId = id;
       socketUser = username;
-    } catch(e) { //TODO Try catch all socket
+      socket.broadcast.emit('newUser', username);
+    } catch(e) {
       socket.emit('username', false);
-      return console.error(e);
+      console.error(e);
+      socket.emit("errorMessage", e);
     }
-
-    socket.broadcast.emit('newUser', username);
   });
 
   socket.on('requestState', () => {
@@ -48,7 +48,9 @@ io.on('connection', function(socket){
   socket.on('action', function(action) {
     console.log("Action recieved!");
     if (!action) {
-      return socket.emit('errorMessage', 'Please Click Action');
+      return socket.emit('errorMessage', 'No action provided!');
+    } else if (game.currentPlayer.username !== socketUser) {
+      return socket.emit('errorMessage', "Not your turn!");
     }
 
     //TODO switch
