@@ -150,6 +150,10 @@ var BoardView = React.createClass({
     });
     this.state.socket.on(this.state.username, (data) => {
       //TODO need to pick an influence card to lose
+      console.log("asked to lose an influence");
+      var choice = "TODO CHOICE NOT MADE"; //TODO make actual choice
+      data.chosenRole = choice;
+      this.state.socket.emit("LostInfluence", data);
     });
    },
   performAction(actionObject){

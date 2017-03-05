@@ -81,17 +81,15 @@ io.on('connection', function(socket){
             //handle BS call
             console.log("Yes to Bullshit");
             var loser = game.whoLostChallenge(x.username, x.action.player, actionToCharacter[x.action.action]);
-            askToLoseInfluence(loser, () => { //TODO make work
-              if (loser === actingPlayer) {
-                console.log("rejected call back");
-                BSables[x.action.action].disallowed();
-              } else {
-                console.log("Yes to action call back!");
-                BSables[x.action.action].allowed(x.action);
-              }
-            });
+            if (loser === x.action.player) {
+              console.log("rejected call back");
+              askToLoseInfluence(loser, {reason: "Called Out", attemptedAction: x.action});
+            } else {
+              console.log("Yes to action call back!");
+              askToLoseInfluence(loser, {reason: "Bad BS", attemptedAction: x.action});
+            }
             return true
-          }s
+          }
         })) {
           console.log("No Bullshit action call back");
           BSables[data.action.action].allowed(data.action);
@@ -100,15 +98,30 @@ io.on('connection', function(socket){
       }
     })
 
-
+  // data has chosenRole, attemptedAction, reason
   socket.on("LostInfluence", (data) => {
-    game.getPlayer(socketUser).loseInfluence(data.chosenRole);
-    callback();
+    console.log(socketUser + " chose to lose " + data.chosenRole);
+    //game.getPlayer(socketUser).loseInfluence(data.chosenRole); //TODO uncomment
+
+    switch (data.reason) {
+      case "Called Out":
+        console.log("BSables disallowed for called out");
+        BSables[data.attemptedAction.action].disallowed();
+        break;
+      case "Bad BS":
+        console.log("BSables allowed for bad bs");
+        BSables[data.attemptedAction.action].allowed(data.attemptedAction);
+        break;
+      default:
+        console.log("DEFAULT!!!!! SHOULDN'T BE HERE!!!!!");
+    }
+
   });
 
-  function askToLoseInfluence(losingPlayer, callback) {
+  function askToLoseInfluence(losingPlayer, lossDetails) {
     console.log("lossing player has lose: ", losingPlayer);
-    socket.emit(losingPlayer,null);
+    console.log("loss details", lossDetails);
+    socket.broadcast.emit(losingPlayer, lossDetails);
   }
 
     //
