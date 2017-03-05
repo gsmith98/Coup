@@ -6,6 +6,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var _ = require('underscore');
+var bsableConstructor = require('./bsables');
+var actionToCharacter = require('./actionToCharacter');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -16,47 +18,47 @@ app.get('/', function(req, res) {
 var Game = require('./game');
 var game = new Game();
 
+//server variable to collect responses to most recent poll emission (BSchance, blockChance)
 var responses = [];
 
 io.on('connection', function(socket){
   console.log('connected');
   var socketUser; //the user who sent whatever event is being handled in here //TODO refactor to use
+  var BSables = bsableConstructor(socket, game);
 
-  function moveOn() {
-    console.log("Move on called");
-    game.nextPlayer();
-  }
-
-  function performAction(action) {
-    console.log("performAction called with action ", action.action);
-    game.takeAction(action);
-    game.nextPlayer();
-  }
-
-  var BSables = {
-    "TAX": {
-      allowed: performAction,
-      disallowed: moveOn
-    },
-    "STEAL": {
-      allowed: function (action) {
-        blockableAction(action) //emits blockChance
-      },
-      disallowed: moveOn
-    },
-    "BLOCK STEAL": {
-      allowed: moveOn,
-      disallowed: function (action) {
-        action.action = "STEAL";
-        performAction(action);
-      }
+  socket.on('username', function(username) {
+    console.log(username)
+    try {
+      var id = game.addPlayer(username);
+      socket.playerId = id;
+      socketUser = username;
+    } catch(e) {
+      socket.emit('username', false); //TODO try catch all socket.ons, catch should emit to error channel
+      return console.error(e);
     }
-  };
+    socket.emit('username', id);
+    socket.emit('updateGame', game.getPlayerPerspective(username));
+  });
 
-  var actionToCharacter = {
-    "TAX": "Duke",
-    "STEAL": "Captain"
-  }
+  socket.on('requestState', () => {
+    socket.emit(socketUser + "newGameStatus", game.getPlayerPerspective(socketUser)); //TODO channel name needn't use socketUser, emit goes only to requester
+  });
+
+
+  socket.on('action', function(action) {
+    console.log("Action recieved!");
+    if (!action) {
+      return socket.emit('errorMessage', 'Please Click Action');
+    }
+
+    //TODO switch
+    //case TAX, STEAL, EXCHANGE, ASSASSINATE
+    characterSpecificAction(action);
+    //case FOREIGN AID
+    // blockableAction
+    //case INCOME, COUP
+    // perform action
+  });
 
   //// characterSpecificAction(action.player, "Duke", "takeActionAndMoveOn", "moveOn", actionObj);
   function characterSpecificAction(actionObj) {
@@ -155,23 +157,7 @@ io.on('connection', function(socket){
 
     // blockableAction() //
 
-  socket.on('username', function(username) {
-    console.log(username)
-    try {
-      var id = game.addPlayer(username);
-      socket.playerId = id;
-      socketUser = username;
-    } catch(e) {
-      socket.emit('username', false);
-      return console.error(e);
-    }
-    socket.emit('username', id);
-    socket.emit('updateGame', game.getPlayerPerspective(username));
-  });
 
-  socket.on('requestState', () => {
-    socket.emit(socketUser + "newGameStatus", game.getPlayerPerspective(socketUser));
-  })
 
   //
   // socket.on('roomCheck', function() {
@@ -185,16 +171,7 @@ io.on('connection', function(socket){
   //
   //  });
   //
-  socket.on('action', function(action) {
-    console.log("Action recieved!");
-    if (!action) {
-      return socket.emit('errorMessage', 'Please Click Action');
-    }
 
-    characterSpecificAction(action);
-
-
-  })
   //
   // socket.on('refreshCard', function(action) {
   //
