@@ -165,6 +165,10 @@ var BoardView = React.createClass({
       data.chosenRole = choice;
       this.state.socket.emit("LostInfluence", data);
     });
+
+    this.state.socket.on("errorMessage", (msg) => {
+      this.setState({message: msg});
+    });
    },
   performAction(actionObject){
     this.state.socket.emit('action', actionObject)
