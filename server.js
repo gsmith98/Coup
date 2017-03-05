@@ -131,7 +131,7 @@ io.on('connection', function(socket){
   // data has chosenRole, attemptedAction, reason
   socket.on("LostInfluence", (data) => {
     console.log(socketUser + " chose to lose " + data.chosenRole);
-    //game.getPlayer(socketUser).loseInfluence(data.chosenRole); //TODO uncomment
+    game.getPlayer(socketUser).loseInfluence(data.chosenRole);
 
     switch (data.reason) {
       case "Called Out":
@@ -152,6 +152,7 @@ io.on('connection', function(socket){
     console.log("lossing player has lose: ", losingPlayer);
     console.log("loss details", lossDetails);
     socket.broadcast.emit(losingPlayer, lossDetails);
+    socket.emit(losingPlayer, lossDetails)
   }
 
     //

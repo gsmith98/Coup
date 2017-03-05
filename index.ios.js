@@ -163,11 +163,31 @@ var BoardView = React.createClass({
         );
     });
     this.state.socket.on(this.state.username, (data) => {
-      //TODO need to pick an influence card to lose
+
       console.log("asked to lose an influence");
-      var choice = "TODO CHOICE NOT MADE"; //TODO make actual choice
-      data.chosenRole = choice;
-      this.state.socket.emit("LostInfluence", data);
+
+      var currentUser = this.state.playerObjects.filter((x) => {
+        return x.username===this.state.username
+      })
+      var currentcard0 = currentUser[0].influence[0].role.toString();
+      var currentcard1 = currentUser[0].influence[1].role.toString();
+      if(currentUser[0].influence[0].alive && currentUser[0].influence[1].alive){
+        Alert.alert('You Loss the Bet! Which card to loss?',
+                    null,
+                  [{text: currentcard0, onPress: this.loseInfluence.bind(this, currentcard0, data)},
+                  {text: currentcard1, onPress: this.loseInfluence.bind(this, currentcard1, data)}]
+        );
+      }else{
+        if(currentUser[0].influence[0].alive){
+          Alert.alert('You Loss the Bet! You are finish!',
+                      null,
+                    [{text: "Comfirm", onPress: this.loseInfluence.bind(this, currentcard0, data)}]);
+        }else{
+          Alert.alert('You Loss the Bet! You are finish!',
+                      null,
+                    [{text: "Comfirm", onPress: this.loseInfluence.bind(this, currentcard1, data)}]);
+        }
+      }
     });
    },
   performAction(actionObject){
@@ -175,6 +195,10 @@ var BoardView = React.createClass({
   },
   bsresponse(resp, data){
     this.state.socket.emit('BS', {username: this.state.username, bs: resp, action: data})
+  },
+  loseInfluence(resp, data){
+    data.chosenRole = resp;
+    this.state.socket.emit("LostInfluence", data);
   },
   render() {
     return <View style={styles.container}>
