@@ -21,6 +21,7 @@ import SocketIOClient from 'socket.io-client';
 var Orientation = require('react-native-orientation')
 import Modal from 'react-native-simple-modal';
 import Style from "./Style";
+
 var picture = {
     Duke: require('./images/duke1.png'),
     Contessa: require('./images/contessa1.png'),
@@ -124,12 +125,16 @@ var BoardView = React.createClass({
       coin: 2,
       socket: this.props.socket,
       open: false,
-      action: ""
+      action: "",
+      message: "game has not started yet and noone is in the room"
     }
   },
   componentDidMount(){
     this.state.socket.on('newUser', (data) => {
       console.log("new user has come in and his username is ", data)
+      this.setState({
+        message: data + " has enter the room."
+      })
       this.state.socket.emit('requestState', null)
     });
     this.state.socket.on(this.state.username + 'newGameStatus', (data) => {
@@ -167,57 +172,214 @@ var BoardView = React.createClass({
            </View>
   },
   renderTiles(){
-    var otherUser = this.state.playerObjects.filter((x) => {
-      return x.username!==this.state.username
-    })
-    var currentUser = this.state.playerObjects.filter((x) => {
-      return x.username===this.state.username
-    })
-    var targets = otherUser.map((x) => {
-       return <Button onPress={() => {this.state.socket.emit('action', {player: this.state.username, action: this.state.action, targetPlayer: x.username})}}>{x.username}</Button>
-     });
-    if(currentUser[0]){
-      console.log(currentUser[0] + " is the current user!")
-      var currentcard0 = currentUser[0].influence[0].role.toString();
-      var currentcard1 = currentUser[0].influence[1].role.toString();
+    var playerOn = this.state.playerObjects;
+    if(playerOn[0]){
+      while(this.state.username !== playerOn[0].username){
+        var element = playerOn.shift();
+        playerOn.push(element);
+      }
     }
-    if(otherUser[0]){
-      console.log(otherUser[0] + " is the other user!")
-      var card0 = otherUser[0].influence[0].role.toString();
-      var card1 = otherUser[0].influence[1].role.toString();
+    if(playerOn[0]){
+    var currentcard0 = playerOn[0].influence[0].role;
+    var currentcard1 = playerOn[0].influence[1].role;
     }
-    if(otherUser[1]){
-      var card2 = otherUser[1].influence[0].role.toString();
-      var card3 = otherUser[1].influence[1].role.toString();
+    if(playerOn[1]){
+      var card0 = playerOn[1].influence[0].role;
+      var card1 = playerOn[1].influence[1].role;
     }
-    if(otherUser[2]){
-      var card4 = otherUser[2].influence[0].role.toString();
-      var card5 = otherUser[2].influence[1].role.toString();
+    if(playerOn[2]){
+      var card2 = playerOn[2].influence[0].role;
+      var card3 = playerOn[2].influence[1].role;
+    }
+    if(playerOn[3]){
+      var card4 = playerOn[3].influence[0].role;
+      var card5 = playerOn[3].influence[1].role;
     }
 
     return (
       <View>
-
-          {otherUser[0] ? (
             <View style={styles.user1}>
-              <Text style={{alignItems: 'center'}}>{otherUser[0].username}</Text>
+              {playerOn[1] ? (
+              <View style={{flex:4}}>
+              <Text style={{textAlign: 'center', flex: 2}}>{playerOn[1].username}</Text>
+              <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[1].coins}</Text>
+              </View>
+              ) : (
+              <View style={{flex:4}}>
+              <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+              <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+              </View>
+              )}
 
+              <View style={{alignItems: 'center', flex: 8}}>
+              {playerOn[1] ? (
+                  <Image
+                    style={{ transform: [{rotate: '90deg'}] }}
+                    source={picture[card1]}>
+                  </Image>
+                ) : ( <Image
+                  style={{transform: [{rotate: '90deg'}] }}
+                  source={picture.Facedown}>
+                </Image> ) }
+              </View>
+
+              <View style={{alignItems: 'center', flex: 8}}>
+              {playerOn[1] ? (
+                  <Image
+                    style={{ transform: [{rotate: '-90deg'}] }}
+                    source={picture[card0]}>
+                  </Image>
+                ) : ( <Image
+                  style={{transform: [{rotate: '-90deg'}] }}
+                  source={picture.Facedown}>
+                </Image> ) }
+              </View>
             </View>
-          ) : null }
-            <View style={styles.user2}>
 
+            <View style={styles.user2}>
+                    {playerOn[2] ? (
+                      <Text style={{textAlign: 'center', flex: 1}}>{playerOn[2].username}</Text>
+                    ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
+
+                      <View style={{flex: 1}}>
+                      {playerOn[2] ? (
+                          <Image
+                            source={picture[card3]}>
+                          </Image>
+                        ) : ( <Image
+
+                          source={picture.Facedown}>
+                        </Image> ) }
+                      </View>
+
+                      <View style={{ flex: 1}}>
+                      {playerOn[2] ? (
+                          <Image
+                            source={picture[card2]}>
+                          </Image>
+                        ) : ( <Image
+                          source={picture.Facedown}>
+                        </Image> ) }
+                      </View>
+                      {playerOn[2] ? (
+                      <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[2].coins}</Text>
+                      ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
             </View>
 
             <View style={styles.user3}>
+                {playerOn[3] ? (
+                <View style={{flex:4}}>
+                <Text style={{textAlign: 'center', flex: 2}}>{playerOn[3].username}</Text>
+                <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[3].coins}</Text>
+                </View>
+                ) : (
+                <View style={{flex:4}}>
+                <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+                <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+                </View>
+                )}
 
+                <View style={{alignItems: 'center', flex: 8}}>
+                  {playerOn[3] ? (
+                    <Image
+                      style={{ transform: [{rotate: '90deg'}] }}
+                      source={picture[card4]}>
+                    </Image>
+                  ) : ( <Image
+                    style={{transform: [{rotate: '90deg'}] }}
+                    source={picture.Facedown}>
+                  </Image> ) }
+                </View>
+
+                <View style={{alignItems: 'center', flex: 8}}>
+                {playerOn[3] ? (
+                    <Image
+                      style={{ transform: [{rotate: '90deg'}] }}
+                      source={picture[card5]}>
+                    </Image>
+                  ) : ( <Image
+                    style={{transform: [{rotate: '90deg'}] }}
+                    source={picture.Facedown}>
+                  </Image> ) }
+                </View>
+            </View>
+
+            <View style={styles.userContainer}>
+                {playerOn[0] ? (
+                <Text style={{textAlign: 'center', flex: 1}}>{playerOn[0].username} </Text>
+                ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
+                <View style={{flex: 1}}>
+                {playerOn[0] ? (
+                    <Image
+                      source={picture[currentcard0]}>
+                    </Image>
+                  ) : ( <Image
+                    source={picture.Facedown}>
+                  </Image> ) }
+                </View>
+
+                <View style={{ flex: 1}}>
+                {playerOn[0] ? (
+                    <Image
+                      source={picture[currentcard1]}>
+                    </Image>
+                  ) : ( <Image
+                    source={picture.Facedown}>
+                  </Image> ) }
+                </View>
+                {playerOn[2] ? (
+                <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[0].coins}</Text>
+                ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
             </View>
 
             <View style={styles.userAction}>
 
+              <View style={{flex: 1}}>
+                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})}  textStyle={{fontSize: 12}}>
+                  Taxes
+                </Button>
+              </View>
+
+              <View style={{flex: 1}}>
+                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "INCOME"})}    textStyle={{fontSize: 12}}>
+                  Income
+                </Button>
+              </View>
+
+              <View style={{flex: 1}}>
+                  <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN AID"})}    textStyle={{fontSize: 12}}>
+                  Foreign Aid
+                  </Button>
+              </View>
+
+              <View style={{flex: 1}}>
+              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "STEAL", open: true})}   textStyle={{fontSize: 12}}>
+                Steal
+                </Button>
+              </View>
+              {(this.state.coins >= 3) ? (
+              <View style={{flex: 1}}>
+
+              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={this.performAction.bind(this, {player: this.state.username, action: "ASSASSINATE"})} textStyle={{fontSize: 12}}>
+                Assassin
+              </Button>
+
+              </View>
+                ) : null}
+
+              {(this.state.coins >= 7) ? (
+              <View style={{ flex: 1}}>
+
+                    <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={this.performAction.bind(this, {player: this.state.username, action: "COUP"})}   textStyle={{fontSize: 12}}>
+                      Coup
+                    </Button>
+
+              </View>
+              ) : null}
             </View>
 
-            <View style={styles.userContainer}>
-
+            <View style={styles.notif}>
+              <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>{this.state.message}</Text>
             </View>
       </View>
     )
@@ -227,33 +389,75 @@ var BoardView = React.createClass({
 
 var styles = StyleSheet.create({
   container: {
-    width: Style.CARD_WIDTH,
+    width: Style.DEVICE_WIDTH,
     height: Style.CARD_HEIGHT,
   },
   user1: {
-    width: Style.CARD_WIDTH/4,
+    width: Style.CARD_WIDTH/5,
     height: Style.CARD_HEIGHT*5.5/10,
     marginTop: Style.CARD_WIDTH/16,
-    backgroundColor: "red",
+    // backgroundColor: "red",
     position: 'absolute',
     left:     0,
     top:      0,
+    flex: 20,
+    flexDirection: 'column'
   },
   user2: {
-
+    width: Style.DEVICE_WIDTH/2,
+    height: Style.CARD_HEIGHT/4,
+    marginTop: Style.CARD_WIDTH/16,
+    // backgroundColor: "green",
+    position: 'absolute',
+    left:     Style.DEVICE_WIDTH/4,
+    top:      0,
+    flex: 4,
+    flexDirection: 'row'
   },
   user3: {
-    width: Style.CARD_WIDTH/4,
+    width: Style.CARD_WIDTH/5,
     height: Style.CARD_HEIGHT*5.5/10,
     marginTop: Style.CARD_WIDTH/16,
-    backgroundColor: "blue",
+    // backgroundColor: "blue",
+    alignSelf: 'flex-end',
     position: 'absolute',
     right:     0,
     top:      0,
-
+    flex: 20,
+    flexDirection: 'column'
   },
   userContainer: {
-
+    width: Style.DEVICE_WIDTH/2,
+    height: Style.CARD_HEIGHT/4,
+    marginTop: Style.CARD_WIDTH/16,
+    // backgroundColor: "black",
+    position: 'absolute',
+    left:     Style.DEVICE_WIDTH/4,
+    bottom: -Style.DEVICE_HEIGHT,
+    flex: 6,
+    flexDirection: 'row'
+  },
+  userAction: {
+    width: Style.DEVICE_WIDTH/2,
+    height: Style.CARD_HEIGHT/8,
+    marginTop: Style.CARD_WIDTH/16,
+    // backgroundColor: "purple",
+    position: 'absolute',
+    left:     Style.DEVICE_WIDTH/4,
+    bottom: -Style.DEVICE_HEIGHT/4*3,
+    flex: 6,
+    flexDirection: 'row'
+  },
+  notif: {
+    width: Style.DEVICE_WIDTH/2,
+    height: Style.CARD_HEIGHT/8,
+    marginTop: Style.CARD_WIDTH/16,
+    // backgroundColor: "purple",
+    position: 'absolute',
+    left:     Style.DEVICE_WIDTH/4,
+    bottom: -Style.DEVICE_HEIGHT/5*3,
+    flex: 1,
+    flexDirection: 'row'
   }
 });
 
