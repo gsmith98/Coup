@@ -16,36 +16,57 @@ app.get('/', function(req, res) {
 var Game = require('./game');
 var game = new Game();
 
-var responses;
-var actingPlayer;
-var claimedCharacter;
-var actionCallback;
-var rejectedCallback;
-
-function resetSharedVariables() {
-  responses = [];
-  actingPlayer = null;
-  claimedCharacter = null;
-  actionCallback = null;
-  rejectedCallback = null;
-}
-
-resetSharedVariables();
+var responses = [];
 
 io.on('connection', function(socket){
   console.log('connected');
   var socketUser; //the user who sent whatever event is being handled in here //TODO refactor to use
 
-  function characterSpecificAction(actingPlayerArg, claimedCharacterArg, actionCallbackArg, rejectedCallbackArg) {
+  function moveOn() {
+    console.log("Move on called");
+    game.nextPlayer();
+  }
+
+  function performAction(action) {
+    console.log("performAction called with action " action.action);
+    game.takeAction(action);
+    game.nextPlayer();
+  }
+
+  var BSables = [
+    "TAX": {
+      allowed: performAction,
+      disallowed: moveOn
+    },
+    "STEAL": {
+      allowed: function (action) {
+        blockableAction(action) //emits blockChance
+      },
+      disallowed: moveOn
+    },
+    "BLOCK STEAL": {
+      allowed: moveOn,
+      disallowed: function (action) {
+        action.action = "STEAL";
+        performAction(action);
+      }
+    }
+  ];
+
+  var actionToCharacter = {
+    "TAX": "DUKE",
+    "STEAL": "CAPTAIN"
+  }
+
+  //// characterSpecificAction(action.player, "Duke", "takeActionAndMoveOn", "moveOn", actionObj);
+  function characterSpecificAction(actionObj) {
     //emit bs opportunity to all other players (broadcast)
     console.log("11111111111111");
-    actingPlayer = actingPlayerArg;
-    claimedCharacter = claimedCharacterArg;
-    actionCallback = actionCallbackArg;
-    rejectedCallback = rejectedCallbackArg;
-    socket.broadcast.emit("BSchance", {actingPlayer, claimedCharacter});
+    responses = [];
+    socket.broadcast.emit("BSchance", actionObj);
   };
 
+  //data will include action: actionObj, bs: bool, username: who <- cannot be refactored ton use socketUser
   socket.on('BS', (data) => {
       console.log(data);
       responses.push(data);
@@ -59,23 +80,23 @@ io.on('connection', function(socket){
           } else {
             //handle BS call
             console.log("Yes to Bullshit");
-            var loser = game.whoLostChallenge(x.username, actingPlayer, claimedCharacter);
+            var loser = game.whoLostChallenge(x.username, x.action.player, actionToCharacter[x.action.action]);
             askToLoseInfluence(loser, () => {
               if (loser === actingPlayer) {
-                console.log("rejeced call back");
-                rejectedCallback();
+                console.log("rejected call back");
+                BSables[x.action.action].disallowed();
               } else {
                 console.log("Yes to action call back!");
-                actionCallback()
+                BSables[x.action.action].allowed(x.action);
               }
             });
             return true
           }
         })) {
           console.log("No Bullshit action call back");
-            actionCallback();
+          BSables[data.action.action].allowed(data.action);
         }
-        resetSharedVariables();
+        responses = [];
       }
     })
 
@@ -118,6 +139,8 @@ io.on('connection', function(socket){
     // characterSpecificAction("Don", "Assassin", blockableAction("Don", "Assassin", "Junjie", assassinateSuccess, assassinateCalledOut), assassinateCalledOut);
     //
 
+    // blockableAction() //
+
   socket.on('username', function(username) {
     console.log(username)
     try {
@@ -154,18 +177,7 @@ io.on('connection', function(socket){
       return socket.emit('errorMessage', 'Please Click Action');
     }
 
-    // function taxSuccess() {
-    //   game.takeAction(action);
-    //   game.nextPlayer();
-    // };
-    // function taxCalledOut() {
-    //   game.nextPlayer();
-    // };
-    // characterSpecificAction(action.player, "Duke", taxSuccess, taxCalledOut)
-    //
-
-    
-
+    characterSpecificAction(actionObj);
 
 
   })
