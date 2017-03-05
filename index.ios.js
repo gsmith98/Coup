@@ -196,59 +196,94 @@ var BoardView = React.createClass({
       var card5 = playerOn[3].influence[1].role;
     }
 
+    // {playerOn[2] ? (
+    //   <Text style={{textAlign: 'center', flex: 1}}>{playerOn[2].username}</Text>
+    // ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
+    //
+    // {playerOn[2] ? (
+    // <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[2].coins}</Text>
+    // ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
+
+    // {playerOn[1] ? (
+    // <View style={{flex:4}}>
+    // <Text style={{textAlign: 'center', flex: 2}}>{playerOn[1].username}</Text>
+    // <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[1].coins}</Text>
+    // </View>
+    // ) : (
+    // <View style={{flex:4}}>
+    // <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+    // <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+    // </View>
+    // )}
+    //
+    // {playerOn[3] ? (
+    // <View style={{flex:4}}>
+    // <Text style={{textAlign: 'center', flex: 2}}>{playerOn[3].username}</Text>
+    // <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[3].coins}</Text>
+    // </View>
+    // ) : (
+    // <View style={{flex:4}}>
+    // <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+    // <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+    // </View>
+    // )}
     return (
       <View>
+       <View style={styles.otherPlayerBox}>
             <View style={styles.user1}>
+
+              <View style={{alignItems: 'center', flex: 8}}>
               {playerOn[1] ? (
-              <View style={{flex:4}}>
+                  <Image
+                    style={{ transform: [{rotate: '180deg'}] }}
+                    source={picture[card1]}>
+                  </Image>
+                ) : ( <Image
+                  style={{transform: [{rotate: '180deg'}] }}
+                  source={picture.Facedown}>
+                </Image> ) }
+              </View>
+
+              <View style={{alignItems: 'center', flex: 8}}>
+              {playerOn[1] ? (
+                  <Image
+                    style={{ transform: [{rotate: '180deg'}] }}
+                    source={picture[card0]}>
+                  </Image>
+                ) : ( <Image
+                  style={{transform: [{rotate: '180deg'}] }}
+                  source={picture.Facedown}>
+                </Image> ) }
+              </View>
+
+              {playerOn[1] ? (
+              <View>
               <Text style={{textAlign: 'center', flex: 2}}>{playerOn[1].username}</Text>
               <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[1].coins}</Text>
               </View>
               ) : (
-              <View style={{flex:4}}>
+              <View>
               <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
               <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
               </View>
               )}
-
-              <View style={{alignItems: 'center', flex: 8}}>
-              {playerOn[1] ? (
-                  <Image
-                    style={{ transform: [{rotate: '90deg'}] }}
-                    source={picture[card1]}>
-                  </Image>
-                ) : ( <Image
-                  style={{transform: [{rotate: '90deg'}] }}
-                  source={picture.Facedown}>
-                </Image> ) }
-              </View>
-
-              <View style={{alignItems: 'center', flex: 8}}>
-              {playerOn[1] ? (
-                  <Image
-                    style={{ transform: [{rotate: '-90deg'}] }}
-                    source={picture[card0]}>
-                  </Image>
-                ) : ( <Image
-                  style={{transform: [{rotate: '-90deg'}] }}
-                  source={picture.Facedown}>
-                </Image> ) }
-              </View>
             </View>
 
             <View style={styles.user2}>
-                    {playerOn[2] ? (
-                      <Text style={{textAlign: 'center', flex: 1}}>{playerOn[2].username}</Text>
-                    ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
 
                       <View style={{flex: 1}}>
                       {playerOn[2] ? (
                           <Image
                             source={picture[card3]}>
+                            {playerOn[2] ? (
+                            <Text style={{textAlign: 'center'}}>Coins: {playerOn[2].coins}</Text>
+                            ) : (<Text style={{textAlign: 'center'}}>"No Player"</Text>)}
                           </Image>
                         ) : ( <Image
-
                           source={picture.Facedown}>
+                            {playerOn[2] ? (
+                            <Text style={{textAlign: 'center'}}>Coins: {playerOn[2].coins}</Text>
+                            ) : (<Text style={{textAlign: 'center'}}>"No Player"</Text>)}
                         </Image> ) }
                       </View>
 
@@ -256,37 +291,30 @@ var BoardView = React.createClass({
                       {playerOn[2] ? (
                           <Image
                             source={picture[card2]}>
+                            {playerOn[2] ? (
+                              <Text style={{textAlign: 'center'}}>{playerOn[2].username}</Text>
+                            ) : (<Text style={{textAlign: 'center'}}>"No Player"</Text>)}
                           </Image>
                         ) : ( <Image
                           source={picture.Facedown}>
+                          {playerOn[2] ? (
+                            <Text style={{textAlign: 'center'}}>{playerOn[2].username}</Text>
+                          ) : (<Text style={{textAlign: 'center'}}>"No Player"</Text>)}
                         </Image> ) }
                       </View>
-                      {playerOn[2] ? (
-                      <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[2].coins}</Text>
-                      ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
+
             </View>
 
             <View style={styles.user3}>
-                {playerOn[3] ? (
-                <View style={{flex:4}}>
-                <Text style={{textAlign: 'center', flex: 2}}>{playerOn[3].username}</Text>
-                <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[3].coins}</Text>
-                </View>
-                ) : (
-                <View style={{flex:4}}>
-                <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
-                <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
-                </View>
-                )}
 
                 <View style={{alignItems: 'center', flex: 8}}>
                   {playerOn[3] ? (
                     <Image
-                      style={{ transform: [{rotate: '90deg'}] }}
+                      style={{ transform: [{rotate: '180deg'}] }}
                       source={picture[card4]}>
                     </Image>
                   ) : ( <Image
-                    style={{transform: [{rotate: '90deg'}] }}
+                    style={{transform: [{rotate: '180deg'}] }}
                     source={picture.Facedown}>
                   </Image> ) }
                 </View>
@@ -294,16 +322,31 @@ var BoardView = React.createClass({
                 <View style={{alignItems: 'center', flex: 8}}>
                 {playerOn[3] ? (
                     <Image
-                      style={{ transform: [{rotate: '90deg'}] }}
+                      style={{ transform: [{rotate: '180deg'}] }}
                       source={picture[card5]}>
                     </Image>
                   ) : ( <Image
-                    style={{transform: [{rotate: '90deg'}] }}
+                    style={{transform: [{rotate: '180deg'}] }}
                     source={picture.Facedown}>
                   </Image> ) }
                 </View>
-            </View>
 
+
+                {playerOn[3] ? (
+                  <View>
+                  <Text style={{textAlign: 'center', flex: 2}}>{playerOn[3].username}</Text>
+                  <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[3].coins}</Text>
+                  </View>
+                  ) : (
+                  <View>
+                  <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+                  <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+                  </View>
+                )}
+
+
+            </View>
+          </View>
             <View style={styles.userContainer}>
                 {playerOn[0] ? (
                 <Text style={{textAlign: 'center', flex: 1}}>{playerOn[0].username} </Text>
@@ -392,39 +435,49 @@ var styles = StyleSheet.create({
     width: Style.DEVICE_WIDTH,
     height: Style.CARD_HEIGHT,
   },
-  user1: {
-    width: Style.CARD_WIDTH/5,
-    height: Style.CARD_HEIGHT*5.5/10,
+  otherPlayerBox: {
+    width: Style.DEVICE_WIDTH,
+    height: Style.CARD_HEIGHT/3,
+    flex: 3,
     marginTop: Style.CARD_WIDTH/16,
+    // backgroundColor: "pink",
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    flexDirection: 'row'
+  },
+  user1: {
+    // width: Style.CARD_WIDTH/5,
+    // height: Style.CARD_HEIGHT*5.5/10,
+    // marginTop: Style.CARD_WIDTH/16,
     // backgroundColor: "red",
     position: 'absolute',
     left:     0,
     top:      0,
-    flex: 20,
-    flexDirection: 'column'
+    flex: 1,
+    flexDirection: 'row'
   },
   user2: {
-    width: Style.DEVICE_WIDTH/2,
-    height: Style.CARD_HEIGHT/4,
-    marginTop: Style.CARD_WIDTH/16,
+    // width: Style.DEVICE_WIDTH/2,
+    // height: Style.CARD_HEIGHT/4,
+    // marginTop: Style.CARD_WIDTH/16,
     // backgroundColor: "green",
     position: 'absolute',
-    left:     Style.DEVICE_WIDTH/4,
+    left:     Style.DEVICE_WIDTH/2.7,
     top:      0,
-    flex: 4,
+    flex: 1,
     flexDirection: 'row'
   },
   user3: {
-    width: Style.CARD_WIDTH/5,
-    height: Style.CARD_HEIGHT*5.5/10,
-    marginTop: Style.CARD_WIDTH/16,
+    // width: Style.CARD_WIDTH/5,
+    // height: Style.CARD_HEIGHT*5.5/10,
+    // marginTop: Style.CARD_WIDTH/16,
     // backgroundColor: "blue",
-    alignSelf: 'flex-end',
     position: 'absolute',
     right:     0,
     top:      0,
-    flex: 20,
-    flexDirection: 'column'
+    flex: 1,
+    flexDirection: 'row'
   },
   userContainer: {
     width: Style.DEVICE_WIDTH/2,
