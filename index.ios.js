@@ -19,6 +19,7 @@ window.navigator.userAgent = "react-native";
 import SocketIOClient from 'socket.io-client';
 
 var Orientation = require('react-native-orientation')
+import Modal from 'react-native-simple-modal';
 
 var picture = {
     Duke: require('./images/duke1.png'),
@@ -121,7 +122,9 @@ var BoardView = React.createClass({
       playerObjects: [],
       username: this.props.username,
       coin: 2,
-      socket: this.props.socket
+      socket: this.props.socket,
+      open: false,
+      action: ""
     }
   },
   componentDidMount(){
@@ -161,19 +164,6 @@ var BoardView = React.createClass({
              </View>
            </View>
   },
-  performActionToOther(actionObject){
-    self = this;
-    var userInfo = this.state.playerObjects.filter((x) => {
-      return x.username!==self.state.username
-    })
-    console.log(" i am here!!!! " + userInfo)
-    Alert.alert('Who to targets',
-                null,
-                [userInfo.map((x)=>{
-                   return {text: x.username, onPress: self.state.socket.emit('action', actionObject)}
-                 })]
-    );
-  },
   renderTiles(){
     var otherUser = this.state.playerObjects.filter((x) => {
       return x.username!==this.state.username
@@ -181,6 +171,9 @@ var BoardView = React.createClass({
     var currentUser = this.state.playerObjects.filter((x) => {
       return x.username===this.state.username
     })
+    var targets = otherUser.map((x) => {
+       return <Button onPress={() => {this.state.socket.emit('action', {player: this.state.username, action: this.state.action, targetPlayer: x.username})}}>{x.username}</Button>
+     });
     if(currentUser[0]){
       console.log(currentUser[0] + "asdasdsadasdasasszxxzcxczcxczcz")
       var currentcard0 = currentUser[0].influence[0].role.toString();
@@ -225,7 +218,6 @@ var BoardView = React.createClass({
               source={picture.Facedown}>
             </Image> ) }
           </View>
-
           <View key={4} style={[styles.btile, {
             left: 0 * CELL_SIZE + CELL_PADDING,
             top: 1 * CELL_SIZE + CELL_PADDING}]}>
@@ -307,29 +299,40 @@ var BoardView = React.createClass({
               Income
               </Button>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN_AID"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN AID"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
               Foreign Aid
               </Button>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "AMBASSADOR"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "EXCHANGE"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
               Ambassador/Exchange 2 cards
               </Button>
 
-              <Button onPress={this.performActionToOther.bind(this, {player: this.state.username, action: "STEAL"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+              <Button onPress={() => this.setState({action: "STEAL", open: true})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
               Steal
               </Button>
 
               {(this.state.coins >= 3) ? (
-                <Button onPress={this.performActionToOther.bind(this, {player: this.state.username, action: "ASSASSIN"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+                <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "ASSASSINATE"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
                 Assassin
                 </Button>
                 ) : null}
 
               {(this.state.coins >= 7) ? (
-                <Button onPress={this.performActionToOther.bind(this, {player: this.state.username, action: "COUP"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
+                <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "COUP"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
                 Coup
                 </Button>
                 ) : null}
+
+                <Modal
+                   offset={this.state.offset}
+                   open={this.state.open}
+                   modalDidOpen={() => console.log('modal did open')}
+                   modalDidClose={() => this.setState({open: false})}
+                   style={{alignItems: 'center'}}>
+                   <View>
+                      {targets}
+                   </View>
+                </Modal>
 
           </View>
         </View>

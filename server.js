@@ -154,15 +154,17 @@ io.on('connection', function(socket){
       return socket.emit('errorMessage', 'Please Click Action');
     }
 
-    function taxSuccess() {
-      game.takeAction(action);
-      game.nextPlayer();
-    };
-    function taxCalledOut() {
-      game.nextPlayer();
-    };
-    characterSpecificAction(action.player, "Duke", taxSuccess, taxCalledOut)
+    // function taxSuccess() {
+    //   game.takeAction(action);
+    //   game.nextPlayer();
+    // };
+    // function taxCalledOut() {
+    //   game.nextPlayer();
+    // };
+    // characterSpecificAction(action.player, "Duke", taxSuccess, taxCalledOut)
     //
+
+    
 
 
 
