@@ -141,7 +141,9 @@ var BoardView = React.createClass({
       var userInfo = data.filter((x) => {
         return x.username===this.state.username
       })
-      console.log("asdsasadadssadasd: ", data)
+
+      console.log("I am this user: ", userInfo)
+
       this.setState({
         playerObjects: data,
         coin: userInfo.coins
@@ -149,22 +151,26 @@ var BoardView = React.createClass({
     });
     this.state.socket.emit('requestState', null);
 
-    this.state.socket.on('BSchance', () => {
+    this.state.socket.on('BSchance', (data) => {
         Alert.alert('Call Bullshit?',
                     null,
-                  [{text: 'no', onPress: this.bsresponse.bind(this, false)},
-                  {text: 'yes', onPress: this.bsresponse.bind(this, true)}]
+                  [{text: 'no', onPress: this.bsresponse.bind(this, false, data)},
+                  {text: 'yes', onPress: this.bsresponse.bind(this, true, data)}]
         );
     });
     this.state.socket.on(this.state.username, (data) => {
       //TODO need to pick an influence card to lose
+      console.log("asked to lose an influence");
+      var choice = "TODO CHOICE NOT MADE"; //TODO make actual choice
+      data.chosenRole = choice;
+      this.state.socket.emit("LostInfluence", data);
     });
    },
   performAction(actionObject){
     this.state.socket.emit('action', actionObject)
   },
-  bsresponse(resp){
-    this.state.socket.emit('BS', {username: this.state.username, bs: resp})
+  bsresponse(resp, data){
+    this.state.socket.emit('BS', {username: this.state.username, bs: resp, action: data})
   },
   render() {
     return <View style={styles.container}>
@@ -231,7 +237,6 @@ var BoardView = React.createClass({
       <View>
        <View style={styles.otherPlayerBox}>
             <View style={styles.user1}>
-
               <View style={{alignItems: 'center', flex: 8}}>
               {playerOn[1] ? (
                   <Image
