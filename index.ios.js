@@ -20,7 +20,7 @@ import SocketIOClient from 'socket.io-client';
 
 var Orientation = require('react-native-orientation')
 import Modal from 'react-native-simple-modal';
-
+import Style from "./Style";
 var picture = {
     Duke: require('./images/duke1.png'),
     Contessa: require('./images/contessa1.png'),
@@ -58,6 +58,21 @@ var Login = React.createClass({
         transports: ['websocket']
       })
     }
+  },
+  componentDidMount(){
+    // var self = this;
+    // AsyncStorage.getItem('user').then(result => {
+    // var parsedResult = JSON.parse(result);
+    // var username = parsedResult.username;
+    // console.log("AsyncStorage: ",username)
+    // if (username) {
+    //         self.props.navigator.push({
+    //           component: BoardView,
+    //           title: "Game Board",
+    //           passProps: {username: username, socket: this.state.socket}
+    //         })
+    //     }
+    // })
   },
    signIn(username) {
     var self = this;
@@ -100,21 +115,6 @@ var Login = React.createClass({
 
 // btile
 var {width, height} = require('Dimensions').get('window');
-var SIZE = 4; // four-by-four grid
-var CELL_SIZE = Math.floor(width * .125); // 20% of the screen width
-var CELL_PADDING = Math.floor(CELL_SIZE * .05); // 5% of the cell size
-var BORDER_RADIUS = CELL_PADDING * 2;
-var TILE_SIZE = CELL_SIZE - CELL_PADDING * 2;
-var LETTER_SIZE = Math.floor(TILE_SIZE * .75);
-
-// ctile
-var {width, height} = require('Dimensions').get('window');
-var SIZE = 4;
-var CELL_SIZE1 =  Math.floor(width * .30);
-var CELL_PADDING1 = Math.floor(CELL_SIZE1 * .05);
-var BORDER_RADIUS1 = CELL_PADDING1 * 2;
-var TILE_SIZE1 = CELL_SIZE1 - CELL_PADDING1 * 2;
-var LETTER_SIZE1 = Math.floor(TILE_SIZE1 * .75);
 
 var BoardView = React.createClass({
   getInitialState: function() {
@@ -128,16 +128,20 @@ var BoardView = React.createClass({
     }
   },
   componentDidMount(){
+    this.state.socket.on('newUser', (data) => {
+      console.log("new user has come in and his username is ", data)
+      this.state.socket.emit('requestState', null)
+    });
     this.state.socket.on(this.state.username + 'newGameStatus', (data) => {
       var userInfo = data.filter((x) => {
         return x.username===this.state.username
       })
+      console.log("asdsasadadssadasd: ", data)
       this.setState({
         playerObjects: data,
         coin: userInfo.coins
       })
     });
-
     this.state.socket.emit('requestState', null);
 
     this.state.socket.on('BSchance', () => {
@@ -159,9 +163,7 @@ var BoardView = React.createClass({
   },
   render() {
     return <View style={styles.container}>
-            <View style={styles.bcontainer}>
              {this.renderTiles()}
-             </View>
            </View>
   },
   renderTiles(){
@@ -175,12 +177,12 @@ var BoardView = React.createClass({
        return <Button onPress={() => {this.state.socket.emit('action', {player: this.state.username, action: this.state.action, targetPlayer: x.username})}}>{x.username}</Button>
      });
     if(currentUser[0]){
-      console.log(currentUser[0] + "asdasdsadasdasasszxxzcxczcxczcz")
+      console.log(currentUser[0] + " is the current user!")
       var currentcard0 = currentUser[0].influence[0].role.toString();
       var currentcard1 = currentUser[0].influence[1].role.toString();
     }
     if(otherUser[0]){
-      console.log(otherUser[0] + "asdasdsadasdasasszxxzcxczcxczcz")
+      console.log(otherUser[0] + " is the other user!")
       var card0 = otherUser[0].influence[0].role.toString();
       var card1 = otherUser[0].influence[1].role.toString();
     }
@@ -194,149 +196,29 @@ var BoardView = React.createClass({
     }
 
     return (
-      <View style={styles.container}>
-        <View style={{marginTop: 37.5, flex:.5}}>
-          <View key={1} style={[styles.btile, {
-            left: 1 * CELL_SIZE + CELL_PADDING,
-            top: 0 * CELL_SIZE + CELL_PADDING}]}>
-            {otherUser[0] ? (
-              <Image
-                source={picture[card0]}>
-              </Image>
-            ) : ( <Image
-              source={picture.Facedown}>
-            </Image> ) }
-          </View>
-          <View key={2} style={[styles.btile, {
-            left: 2 * CELL_SIZE + CELL_PADDING,
-            top: 0 * CELL_SIZE + CELL_PADDING}]}>
-            {otherUser[0] ? (
-              <Image
-                source={picture[card1]}>
-              </Image>
-            ) : ( <Image
-              source={picture.Facedown}>
-            </Image> ) }
-          </View>
-          <View key={4} style={[styles.btile, {
-            left: 0 * CELL_SIZE + CELL_PADDING,
-            top: 1 * CELL_SIZE + CELL_PADDING}]}>
-            {otherUser[1] ? (
-              <Image
-                source={picture[card2]}>
-              </Image>
-            ) : ( <Image
-              source={picture.Facedown}>
-            </Image> ) }
-          </View>
-          <View key={7} style={[styles.btile, {
-            left: 3 * CELL_SIZE + CELL_PADDING,
-            top: 1 * CELL_SIZE + CELL_PADDING}]}>
-            {otherUser[1] ? (
-              <Image
-                source={picture[card3]}>
-              </Image>
-            ) : ( <Image
-              source={picture.Facedown}>
-            </Image> ) }
-          </View>
-          <View key={8} style={[styles.btile, {
-            left: 0 * CELL_SIZE + CELL_PADDING,
-            top: 2 * CELL_SIZE + CELL_PADDING}]}>
-            {otherUser[2] ? (
-              <Image
-                source={picture[card3]}>
-              </Image>
-            ) : ( <Image
-              source={picture.Facedown}>
-            </Image> ) }
-          </View>
-          <View key={11} style={[styles.btile, {
-            left: 3 * CELL_SIZE + CELL_PADDING,
-            top: 2 * CELL_SIZE + CELL_PADDING}]}>
-            {otherUser[3] ? (
-              <Image
-                source={picture[card4]}>
-              </Image>
-            ) : ( <Image
-              source={picture.Facedown}>
-            </Image> ) }
-          </View>
-          <View key={13} style={[styles.btile, {
-            left: 1 * CELL_SIZE + CELL_PADDING,
-            top: 3 * CELL_SIZE + CELL_PADDING}]}>
-            {currentUser[0] ? (
-              <Image
-                source={picture[currentcard0]}>
-              </Image>
-            ) : ( <Image
-              source={picture.Facedown}>
-            </Image> ) }
-          </View>
-          <View key={14} style={[styles.btile, {
-            left: 2 * CELL_SIZE + CELL_PADDING,
-            top: 3 * CELL_SIZE + CELL_PADDING}]}>
-            {currentUser[0] ? (
-              <Image
-                source={picture[currentcard1]}>
-              </Image>
-            ) : ( <Image
-              source={picture.Facedown}>
-            </Image> ) }
-          </View>
-        </View>
+      <View>
 
-        <View style={{flex:.5}}>
-          <View key={1} style={[styles.ctile, {
-            left: .2 * CELL_SIZE + CELL_PADDING,
-            top: 0 * CELL_SIZE + CELL_PADDING}]}>
+          {otherUser[0] ? (
+            <View style={styles.user1}>
+              <Text style={{alignItems: 'center'}}>{otherUser[0].username}</Text>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Taxes
-              </Button>
+            </View>
+          ) : null }
+            <View style={styles.user2}>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "INCOME"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Income
-              </Button>
+            </View>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN AID"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Foreign Aid
-              </Button>
+            <View style={styles.user3}>
 
-              <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "EXCHANGE"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Ambassador/Exchange 2 cards
-              </Button>
+            </View>
 
-              <Button onPress={() => this.setState({action: "STEAL", open: true})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-              Steal
-              </Button>
+            <View style={styles.userAction}>
 
-              {(this.state.coins >= 3) ? (
-                <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "ASSASSINATE"})} style={{backgroundColor: 'red'}}  style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-                Assassin
-                </Button>
-                ) : null}
+            </View>
 
-              {(this.state.coins >= 7) ? (
-                <Button onPress={this.performAction.bind(this, {player: this.state.username, action: "COUP"})} style={{backgroundColor: 'red'}} style={{backgroundColor: 'red'}} textStyle={{fontSize: 18}}>
-                Coup
-                </Button>
-                ) : null}
+            <View style={styles.userContainer}>
 
-                <Modal
-                   offset={this.state.offset}
-                   open={this.state.open}
-                   modalDidOpen={() => console.log('modal did open')}
-                   modalDidClose={() => this.setState({open: false})}
-                   style={{alignItems: 'center'}}>
-                   <View>
-                      {targets}
-                   </View>
-                </Modal>
-
-          </View>
-        </View>
-
+            </View>
       </View>
     )
   }
@@ -344,50 +226,35 @@ var BoardView = React.createClass({
 
 
 var styles = StyleSheet.create({
-  bcontainer: {
-    width: CELL_SIZE * 7.8,
-    height: CELL_SIZE * SIZE,
-    backgroundColor: 'transparent',
-  },
-  btile: {
-    position: 'absolute',
-    width: TILE_SIZE,
-    height: TILE_SIZE,
-    borderRadius: BORDER_RADIUS,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    backgroundColor: '#BEE1D2',
-  },
-  ctile: {
-    position: 'absolute',
-    width: 1.5*TILE_SIZE1,
-    height: 2*TILE_SIZE1,
-    borderRadius: BORDER_RADIUS1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    backgroundColor: '#BEE1D2',
-  },
-  letter: {
-    color: '#333',
-    fontSize: LETTER_SIZE,
-    backgroundColor: 'transparent',
-  },
   container: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    backgroundColor: '#644B62',
+    width: Style.CARD_WIDTH,
+    height: Style.CARD_HEIGHT,
   },
-  landborder: {
-    width: width,
-    marginTop: 65,
-    height: height - 65,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderWidth: 30,
-    borderColor: 'maroon',
+  user1: {
+    width: Style.CARD_WIDTH/4,
+    height: Style.CARD_HEIGHT*5.5/10,
+    marginTop: Style.CARD_WIDTH/16,
+    backgroundColor: "red",
+    position: 'absolute',
+    left:     0,
+    top:      0,
   },
+  user2: {
+
+  },
+  user3: {
+    width: Style.CARD_WIDTH/4,
+    height: Style.CARD_HEIGHT*5.5/10,
+    marginTop: Style.CARD_WIDTH/16,
+    backgroundColor: "blue",
+    position: 'absolute',
+    right:     0,
+    top:      0,
+
+  },
+  userContainer: {
+
+  }
 });
 
 

@@ -128,11 +128,12 @@ io.on('connection', function(socket){
       socket.emit('username', false);
       return console.error(e);
     }
-    socket.emit('username', id);
-    socket.emit('updateGame', game.getPlayerPerspective(username));
+
+    socket.broadcast.emit('newUser', username);
   });
 
   socket.on('requestState', () => {
+    console.log("socketUser should be this !!!! ", socketUser )
     socket.emit(socketUser + "newGameStatus", game.getPlayerPerspective(socketUser));
   })
 
@@ -148,23 +149,47 @@ io.on('connection', function(socket){
   //
   //  });
   //
-  socket.on('action', function(action) {
-    console.log("Action recieved!");
-    if (!action) {
+  socket.on('action', function(data) {
+    console.log("Action recieved! and here is the object contianing it: ", data);
+    if (!data) {
       return socket.emit('errorMessage', 'Please Click Action');
     }
 
-    // function taxSuccess() {
-    //   game.takeAction(action);
-    //   game.nextPlayer();
-    // };
-    // function taxCalledOut() {
-    //   game.nextPlayer();
-    // };
-    // characterSpecificAction(action.player, "Duke", taxSuccess, taxCalledOut)
-    //
+    function taxSuccess() {
+      game.takeAction(action);
+      game.nextPlayer();
+    };
+    function taxCalledOut() {
+      game.nextPlayer();
+    };
 
-    
+    switch(data.action) {
+      case "INCOME":
+
+        break;
+      case "FOREIGN AID":
+
+        break;
+      case "COUP":
+
+
+        break;
+      case "TAX":
+      characterSpecificAction(data.player, "Duke", taxSuccess, taxCalledOut)
+        break;
+      case "ASSASSINATE":
+
+
+        break;
+      case "STEAL":
+
+        break;
+      case "EXCHANGE":
+
+        break;
+      default:
+        throw "Not a valid action!"
+    }
 
 
 
