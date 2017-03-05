@@ -1,9 +1,10 @@
 "use strict";
 
+var express = require('express');
 var path = require('path');
 var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var _ = require('underscore');
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -15,50 +16,79 @@ app.get('/', function(req, res) {
 var Game = require('./game');
 var game = new Game();
 
+var responses;
+var actingPlayer;
+var claimedCharacter;
+var actionCallback;
+var rejectedCallback;
+
+function resetSharedVariables() {
+  responses = [];
+  actingPlayer = null;
+  claimedCharacter = null;
+  actionCallback = null;
+  rejectedCallback = null;
+}
+
+resetSharedVariables();
 
 io.on('connection', function(socket){
   console.log('connected');
+  var socketUser; //the user who sent whatever event is being handled in here //TODO refactor to use
+
+  function characterSpecificAction(actingPlayerArg, claimedCharacterArg, actionCallbackArg, rejectedCallbackArg) {
+    //emit bs opportunity to all other players (broadcast)
+    console.log("11111111111111");
+    actingPlayer = actingPlayerArg;
+    claimedCharacter = claimedCharacterArg;
+    actionCallback = actionCallbackArg;
+    rejectedCallback = rejectedCallbackArg;
+    socket.broadcast.emit("BSchance", {actingPlayer, claimedCharacter});
+  };
+
+  socket.on('BS', (data) => {
+      console.log(data);
+      responses.push(data);
+      //once all responses are gathered
+      if (responses.length === game.numPlayers() - 1) {
+        //check for the first positive response if any
+        if (!responses.some(x => {
+          if (!x.bs) {
+            console.log("Not Bullshit");
+            return false;
+          } else {
+            //handle BS call
+            console.log("Yes to Bullshit");
+            var loser = game.whoLostChallenge(x.username, actingPlayer, claimedCharacter);
+            askToLoseInfluence(loser, () => {
+              if (loser === actingPlayer) {
+                console.log("rejeced call back");
+                rejectedCallback();
+              } else {
+                console.log("Yes to action call back!");
+                actionCallback()
+              }
+            });
+            return true
+          }
+        })) {
+          console.log("No Bullshit action call back");
+            actionCallback();
+        }
+        resetSharedVariables();
+      }
+    })
+
+
+  socket.on("LostInfluence", (data) => {
+    game.getPlayer(socketUser).loseInfluence(data.chosenRole);
+    callback();
+  });
+
   function askToLoseInfluence(losingPlayer, callback) {
-    socket.emit(losingPlayer, {loseInfluence: true}); //TODO revisit the sent object
-    socket.on("LostInfluence", (data) => {
-      game.getPlayer(losingPlayer).loseInfluence(data.chosenRole);
-      callback();
-    });
+    socket.emit(losingPlayer,null);
   }
 
-  //the callback is whatever should happen after all responses are collected
-  function characterSpecificAction(actingPlayer, claimedCharacter, actionCallback, rejectedCallback) {
-    //emit bs opportunity to all other players (broadcast)
-    socket.broadcast.emit("BSchance", {actingPlayer, claimedCharacter});
-    var responses = [];
-    //await all responses
-    socket.on('BS', (data) => {
-        console.log(data);
-        responses.push(data);
-        //once all responses are gathered
-        if (responses.length === game.numPlayers() - 1) {
-          //check for the first positive response if any
-          if (!responses.some(x => {
-            if (!x.bs) {
-              return false;
-            } else {
-              //handle BS call
-              var loser = game.whoLostChallenge(x.username, actingPlayer, claimedCharacter);
-              askToLoseInfluence(loser, () => {
-                if (loser === actingPlayer) {
-                  rejectedCallback();
-                } else {
-                  actionCallback()
-                }
-              });
-              return true
-            }
-          })) {
-              actionCallback();
-          }
-        }
-      }
-    });
     //
     // //Examples!!!!
     //
@@ -89,17 +119,22 @@ io.on('connection', function(socket){
     //
 
   socket.on('username', function(username) {
+    console.log(username)
     try {
-      var id = game.addPlayer(data);
+      var id = game.addPlayer(username);
       socket.playerId = id;
+      socketUser = username;
     } catch(e) {
       socket.emit('username', false);
       return console.error(e);
     }
     socket.emit('username', id);
-    socket.emit('updateGame', game.getGameState());
-    socket.broadcast.emit('updateGame', game.getGameState());
+    socket.emit('updateGame', game.getPlayerPerspective(username));
   });
+
+  socket.on('requestState', () => {
+    socket.emit(socketUser + "newGameStatus", game.getPlayerPerspective(socketUser));
+  })
 
   //
   // socket.on('roomCheck', function() {
@@ -113,17 +148,25 @@ io.on('connection', function(socket){
   //
   //  });
   //
-  // socket.on('gameAction', function(action) {
-  //   if (!action) {
-  //     return socket.emit('errorMessage', 'Please Click Action');
-  //   }
-  //
-  //   socket.to(socket.room).emit('gameAction', {
-  //     username: socket.username,
-  //     action: socket.username
-  //   });
-  //
-  // })
+  socket.on('action', function(action) {
+    console.log("Action recieved!");
+    if (!action) {
+      return socket.emit('errorMessage', 'Please Click Action');
+    }
+
+    function taxSuccess() {
+      game.takeAction(action);
+      game.nextPlayer();
+    };
+    function taxCalledOut() {
+      game.nextPlayer();
+    };
+    characterSpecificAction(action.player, "Duke", taxSuccess, taxCalledOut)
+    //
+
+
+
+  })
   //
   // socket.on('refreshCard', function(action) {
   //
@@ -138,7 +181,7 @@ io.on('connection', function(socket){
 });
 
 
-var port = process.env.PORT || 8081;
+var port = process.env.PORT || 8080;
 http.listen(port, function(){
   console.log('Express started. Listening on %s', port);
 });

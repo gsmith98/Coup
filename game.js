@@ -182,7 +182,7 @@ Game.prototype.numPlayers = function() {
 
 //returns challenge loser AND reshuffles the card if it was revealed
 Game.prototype.whoLostChallenge = function(caller, claimer, claimedCharacter) {
-  var loser = game.getPlayer(claimer).hasRole(claimedCharacter) ? caller : claimer;
+  var loser = this.getPlayer(claimer).hasRole(claimedCharacter) ? caller : claimer;
   if (loser === caller) {
     this.returnAndReplace(claimer, claimedCharacter); //return the revealed card
   }
