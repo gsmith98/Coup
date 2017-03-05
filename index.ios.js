@@ -137,6 +137,9 @@ var BoardView = React.createClass({
       })
       this.state.socket.emit('requestState', null)
     });
+    this.state.socket.on('updateStatus', () => {
+      this.state.socket.emit('requestState', null);
+    });
     this.state.socket.on(this.state.username + 'newGameStatus', (data) => {
       var userInfo = data.filter((x) => {
         return x.username===this.state.username
@@ -149,6 +152,7 @@ var BoardView = React.createClass({
         coin: userInfo.coins
       })
     });
+
     this.state.socket.emit('requestState', null);
 
     this.state.socket.on('BSchance', (data) => {
@@ -375,7 +379,7 @@ var BoardView = React.createClass({
                     source={picture.Facedown}>
                   </Image> ) }
                 </View>
-                {playerOn[2] ? (
+                {playerOn[0] ? (
                 <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[0].coins}</Text>
                 ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
             </View>

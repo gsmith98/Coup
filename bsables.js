@@ -2,12 +2,16 @@ module.exports = function(socket, game) {
   function moveOn() {
     console.log("Move on called");
     game.nextPlayer();
+    socket.emit("updateStatus", null);
+    socket.broadcast.emit("updateStatus", null);
   }
 
   function performAction(action) {
     console.log("performAction called with action ", action.action);
     game.takeAction(action);
     game.nextPlayer();
+    socket.emit("updateStatus", null);
+    socket.broadcast.emit("updateStatus", null);
   }
 
  return (
@@ -18,7 +22,7 @@ module.exports = function(socket, game) {
     },
     "STEAL": {
       allowed: function (action) {
-        blockableAction(action) //emits blockChance
+        blockableAction(action) //emits blockChance //TODO write
       },
       disallowed: moveOn
     },

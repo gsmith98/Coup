@@ -1,4 +1,4 @@
-mocule.exports = {
+module.exports = {
   "TAX": "Duke",
   "STEAL": "Captain",
   "EXCHANGE": "Ambassador",
