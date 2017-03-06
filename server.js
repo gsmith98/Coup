@@ -6,7 +6,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var _ = require('underscore');
-var bsableConstructor = require('./bsables');
+var interactionsConstructor = require('./interactions');
 var actionToCharacter = require('./actionToCharacter');
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -18,18 +18,16 @@ app.get('/', function(req, res) {
 var Game = require('./game');
 var game = new Game();
 
-//server variable to collect responses to most recent poll emission (BSchance, blockChance)
-var responses = [];
-
 io.on('connection', function(socket){
   console.log('connected');
+  var interactions = interactionsConstructor(socket, game);
   var socketUser; //the user who sent whatever event is being handled in here //TODO refactor to use
-  var BSables = bsableConstructor(socket, game);
 
   socket.on('username', function(username) {
     console.log(username)
     try {
       var id = game.addPlayer(username);
+      console.log("after add " + username + " game is", game.players);
       socket.playerId = id;
       socketUser = username;
       socket.broadcast.emit('newUser', username);
@@ -44,20 +42,20 @@ io.on('connection', function(socket){
     socket.emit(socketUser + "newGameStatus", game.getPlayerPerspective(socketUser)); //TODO channel name needn't use socketUser, emit goes only to requester
   });
 
-
   socket.on('action', function(action) {
-    console.log("Action recieved!");
+    console.log("Action recieved from " + socketUser);
+    console.log("currentPlayer should be " + game.currentPlayer().username);
     if (!action) {
       return socket.emit('errorMessage', 'No action provided!');
-    } else if (game.currentPlayer.username !== socketUser) {
+    } else if (game.currentPlayer().username !== socketUser) {
       return socket.emit('errorMessage', "Not your turn!");
     }
 
     //TODO switch
     //case TAX, STEAL, EXCHANGE, ASSASSINATE
-    characterSpecificAction(action);
+    interactions.characterSpecificAction(action);
     //case FOREIGN AID
-    // blockableAction
+    // interactions.blockableAction
     //case INCOME, COUP
     // perform action
     // switch(data.action) {
@@ -72,7 +70,7 @@ io.on('connection', function(socket){
     //
     //     break;
     //   case "TAX":
-    //   characterSpecificAction(data.player, "Duke", taxSuccess, taxCalledOut)
+    //   interactions.characterSpecificAction(data.player, "Duke", taxSuccess, taxCalledOut)
     //     break;
     //   case "ASSASSINATE":
     //
@@ -90,22 +88,17 @@ io.on('connection', function(socket){
 
   });
 
-  //// characterSpecificAction(action.player, "Duke", "takeActionAndMoveOn", "moveOn", actionObj);
-  function characterSpecificAction(actionObj) {
-    //emit bs opportunity to all other players (broadcast)
-    console.log("11111111111111");
-    responses = [];
-    socket.broadcast.emit("BSchance", actionObj);
-  };
+
+
 
   //data will include action: actionObj, bs: bool, username: who <- cannot be refactored ton use socketUser
   socket.on('BS', (data) => {
       console.log(data);
-      responses.push(data);
+      interactions.addResponse(data);
       //once all responses are gathered
-      if (responses.length === game.numPlayers() - 1) {
+      if (interactions.allResponsesGathered()) {
         //check for the first positive response if any
-        if (!responses.some(x => {
+        if (!interactions.someResponse(x => {
           if (!x.bs) {
             console.log("Not Bullshit");
             return false;
@@ -115,18 +108,17 @@ io.on('connection', function(socket){
             var loser = game.whoLostChallenge(x.username, x.action.player, actionToCharacter[x.action.action]);
             if (loser === x.action.player) {
               console.log("rejected call back");
-              askToLoseInfluence(loser, {reason: "Called Out", attemptedAction: x.action});
+              interactions.askToLoseInfluence(loser, {reason: "Called Out", attemptedAction: x.action});
             } else {
               console.log("Yes to action call back!");
-              askToLoseInfluence(loser, {reason: "Bad BS", attemptedAction: x.action});
+              interactions.askToLoseInfluence(loser, {reason: "Bad BS", attemptedAction: x.action});
             }
             return true
           }
         })) {
           console.log("No Bullshit action call back");
-          BSables[data.action.action].allowed(data.action);
+          interactions.BSables[data.action.action].allowed(data.action);
         }
-        responses = [];
       }
     })
 
@@ -137,12 +129,12 @@ io.on('connection', function(socket){
 
     switch (data.reason) {
       case "Called Out":
-        console.log("BSables disallowed for called out");
-        BSables[data.attemptedAction.action].disallowed();
+        console.log("interactions.BSables disallowed for called out");
+        interactions.BSables[data.attemptedAction.action].disallowed();
         break;
       case "Bad BS":
-        console.log("BSables allowed for bad bs");
-        BSables[data.attemptedAction.action].allowed(data.attemptedAction);
+        console.log("interactions.BSables allowed for bad bs");
+        interactions.BSables[data.attemptedAction.action].allowed(data.attemptedAction);
         break;
       default:
         console.log("DEFAULT!!!!! SHOULDN'T BE HERE!!!!!");
@@ -150,12 +142,7 @@ io.on('connection', function(socket){
 
   });
 
-  function askToLoseInfluence(losingPlayer, lossDetails) {
-    console.log("lossing player has lose: ", losingPlayer);
-    console.log("loss details", lossDetails);
-    socket.broadcast.emit(losingPlayer, lossDetails);
-    socket.emit(losingPlayer, lossDetails)
-  }
+
 
     //
     // //Examples!!!!
@@ -168,12 +155,12 @@ io.on('connection', function(socket){
     // function taxCalledOut() {
     //   game.nextPlayer();
     // };
-    // characterSpecificAction("Lisa", "Duke", taxSuccess, taxCalledOut)
+    // interactions.characterSpecificAction("Lisa", "Duke", taxSuccess, taxCalledOut)
     //
     // //Example when Don Assassinates Junjie
     // function assassinateSuccess() {
     //   game.takeAction({player: "Don", action: "ASSASSINATE", targetPlayer: "Junjie"}); //pays 3 coins
-    //   askToLoseInfluence("Junjie", () => { //causes death
+    //   interactions.askToLoseInfluence("Junjie", () => { //causes death
     //     game.nextPlayer(); //moves on
     //   });
     // }
@@ -183,10 +170,10 @@ io.on('connection', function(socket){
     //   game.nextPlayer(); //moves on
     // }
     //
-    // characterSpecificAction("Don", "Assassin", blockableAction("Don", "Assassin", "Junjie", assassinateSuccess, assassinateCalledOut), assassinateCalledOut);
+    // interactions.characterSpecificAction("Don", "Assassin", interactions.blockableAction("Don", "Assassin", "Junjie", assassinateSuccess, assassinateCalledOut), assassinateCalledOut);
     //
 
-    // blockableAction() //
+    // interactions.blockableAction() //
 });
 
 
