@@ -267,6 +267,8 @@ var BoardView = React.createClass({
     // )}
     return (
       <View>
+      <Image source={require('./download.jpg')} style={styles.piccontainer}>
+      </Image>
        <View style={styles.otherPlayerBox}>
             <View style={styles.user1}>
               <View style={{alignItems: 'center', flex: 8}}>
@@ -294,13 +296,12 @@ var BoardView = React.createClass({
               </View>
 
               {playerOn[1] ? (
-              <View>
-              <Text style={{textAlign: 'center', flex: 2}}>{playerOn[1].username}</Text>
-              <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[1].coins}</Text>
+              <View style={styles.textBox}>
+              <Text style={{textAlign: 'center', flex: 1}}>{playerOn[1].username}</Text>
+              <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[1].coins}</Text>
               </View>
               ) : (
-              <View>
-              <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+              <View style={styles.textBox}>
               <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
               </View>
               )}
@@ -312,15 +313,9 @@ var BoardView = React.createClass({
                       {playerOn[2] ? (
                           <Image
                             source={picture[card3]}>
-                            {playerOn[2] ? (
-                            <Text style={{textAlign: 'center'}}>Coins: {playerOn[2].coins}</Text>
-                            ) : (<Text style={{textAlign: 'center'}}>"No Player"</Text>)}
                           </Image>
                         ) : ( <Image
                           source={picture.Facedown}>
-                            {playerOn[2] ? (
-                            <Text style={{textAlign: 'center'}}>Coins: {playerOn[2].coins}</Text>
-                            ) : (<Text style={{textAlign: 'center'}}>"No Player"</Text>)}
                         </Image> ) }
                       </View>
 
@@ -328,22 +323,25 @@ var BoardView = React.createClass({
                       {playerOn[2] ? (
                           <Image
                             source={picture[card2]}>
-                            {playerOn[2] ? (
-                              <Text style={{textAlign: 'center'}}>{playerOn[2].username}</Text>
-                            ) : (<Text style={{textAlign: 'center'}}>"No Player"</Text>)}
                           </Image>
                         ) : ( <Image
                           source={picture.Facedown}>
-                          {playerOn[2] ? (
-                            <Text style={{textAlign: 'center'}}>{playerOn[2].username}</Text>
-                          ) : (<Text style={{textAlign: 'center'}}>"No Player"</Text>)}
                         </Image> ) }
                       </View>
 
+                      {playerOn[2] ? (
+                      <View style={styles.textBox}>
+                      <Text style={{textAlign: 'center', flex: 1}}>{playerOn[2].username}</Text>
+                      <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[2].coins}</Text>
+                      </View>
+                      ) : (
+                      <View style={styles.textBox}>
+                      <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+                      </View>
+                      )}
             </View>
 
             <View style={styles.user3}>
-
                 <View style={{alignItems: 'center', flex: 8}}>
                   {playerOn[3] ? (
                     <Image
@@ -357,37 +355,34 @@ var BoardView = React.createClass({
                 </View>
 
                 <View style={{alignItems: 'center', flex: 8}}>
-                {playerOn[3] ? (
-                    <Image
-                      style={{ transform: [{rotate: '180deg'}] }}
-                      source={picture[card5]}>
-                    </Image>
-                  ) : ( <Image
-                    style={{transform: [{rotate: '180deg'}] }}
-                    source={picture.Facedown}>
-                  </Image> ) }
+                  {playerOn[3] ? (
+                      <Image
+                        style={{ transform: [{rotate: '180deg'}] }}
+                        source={picture[card5]}>
+                      </Image>
+                    ) : ( <Image
+                      style={{transform: [{rotate: '180deg'}] }}
+                      source={picture.Facedown}>
+                    </Image> ) }
                 </View>
 
-
-                {playerOn[3] ? (
-                  <View>
-                  <Text style={{textAlign: 'center', flex: 2}}>{playerOn[3].username}</Text>
-                  <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[3].coins}</Text>
+                  {playerOn[3] ? (
+                  <View style={styles.textBox}>
+                  <Text style={{textAlign: 'center', flex: 1}}>{playerOn[3].username}</Text>
+                  <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[3].coins}</Text>
                   </View>
                   ) : (
-                  <View>
-                  <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+                  <View style={styles.textBox}>
                   <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
                   </View>
-                )}
-
-
+                  )}
             </View>
-          </View>
+        </View>
+
             <View style={styles.userContainer}>
                 {playerOn[0] ? (
-                <Text style={{textAlign: 'center', flex: 1}}>{playerOn[0].username} </Text>
-                ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
+                <Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent",}}>{playerOn[0].username} </Text>
+              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent",}}>"No Player"</Text>)}
                 <View style={{flex: 1}}>
                 {playerOn[0] ? (
                     <Image
@@ -408,12 +403,11 @@ var BoardView = React.createClass({
                   </Image> ) }
                 </View>
                 {playerOn[0] ? (
-                <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[0].coins}</Text>
-                ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
+                <Text style={{textAlign: 'center', flex: 1,backgroundColor: "transparent",}}>Coins: {playerOn[0].coins}</Text>
+              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent",}}></Text>)}
             </View>
 
             <View style={styles.userAction}>
-
               <View style={{flex: 1}}>
                 <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})}  textStyle={{fontSize: 12}}>
                   Taxes
@@ -461,7 +455,7 @@ var BoardView = React.createClass({
             <View style={styles.notif}>
               <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>{this.state.message}</Text>
             </View>
-      </View>
+     </View>
     )
   }
 });
@@ -472,6 +466,14 @@ var styles = StyleSheet.create({
     width: Style.DEVICE_WIDTH,
     height: Style.CARD_HEIGHT,
   },
+  piccontainer: {
+    width: Style.DEVICE_WIDTH,
+    height: Style.DEVICE_HEIGHT,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    zIndex: -999
+  },
   otherPlayerBox: {
     width: Style.DEVICE_WIDTH,
     height: Style.CARD_HEIGHT/3,
@@ -481,6 +483,14 @@ var styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
+    flexDirection: 'row'
+  },
+  textBox: {
+    width: Style.DEVICE_WIDTH/4,
+    backgroundColor: "transparent",
+    position: 'absolute',
+    left: 0,
+    top: Style.CARD_HEIGHT/4,
     flexDirection: 'row'
   },
   user1: {
@@ -542,6 +552,7 @@ var styles = StyleSheet.create({
     width: Style.DEVICE_WIDTH/2,
     height: Style.CARD_HEIGHT/8,
     marginTop: Style.CARD_WIDTH/16,
+    backgroundColor: "transparent",
     // backgroundColor: "purple",
     position: 'absolute',
     left:     Style.DEVICE_WIDTH/4,
