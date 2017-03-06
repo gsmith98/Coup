@@ -51,41 +51,26 @@ io.on('connection', function(socket){
       return socket.emit('errorMessage', "Not your turn!");
     }
 
-    //TODO switch
-    //case TAX, STEAL, EXCHANGE, ASSASSINATE
-    interactions.characterSpecificAction(action);
-    //case FOREIGN AID
-    // interactions.blockableAction
-    //case INCOME, COUP
-    // perform action
-    // switch(data.action) {
-    //   case "INCOME":
-    //
-    //     break;
-    //   case "FOREIGN AID":
-    //
-    //     break;
-    //   case "COUP":
-    //
-    //
-    //     break;
-    //   case "TAX":
-    //   interactions.characterSpecificAction(data.player, "Duke", taxSuccess, taxCalledOut)
-    //     break;
-    //   case "ASSASSINATE":
-    //
-    //
-    //     break;
-    //   case "STEAL":
-    //
-    //     break;
-    //   case "EXCHANGE":
-    //
-    //     break;
-    //   default:
-    //     throw "Not a valid action!"
-    // }
-
+    switch(action.action) {
+      case "TAX":
+      case "STEAL":
+      case "EXCHANGE":
+      case "ASSASSINATE":
+        interactions.characterSpecificAction(action);
+        break;
+      case "INCOME":
+      case "COUP":
+        //TODO performAction
+        console.log("should performAction here");
+        break;
+      case "FOREIGN AID":
+        //TODO blockableAction
+        console.log("Should blockable action for foreign aid here");
+        break;
+      default:
+        console.log("invalid action type");
+        socket.emit('errorMessage', "Invalid action!");
+    }
   });
 
 
@@ -141,39 +126,6 @@ io.on('connection', function(socket){
     }
 
   });
-
-
-
-    //
-    // //Examples!!!!
-    //
-    // //Example when Lisa Taxes
-    // function taxSuccess() {
-    //   game.takeAction({player: "Lisa", action: "TAX"});
-    //   game.nextPlayer();
-    // };
-    // function taxCalledOut() {
-    //   game.nextPlayer();
-    // };
-    // interactions.characterSpecificAction("Lisa", "Duke", taxSuccess, taxCalledOut)
-    //
-    // //Example when Don Assassinates Junjie
-    // function assassinateSuccess() {
-    //   game.takeAction({player: "Don", action: "ASSASSINATE", targetPlayer: "Junjie"}); //pays 3 coins
-    //   interactions.askToLoseInfluence("Junjie", () => { //causes death
-    //     game.nextPlayer(); //moves on
-    //   });
-    // }
-    //
-    // function assassinateCalledOut() {
-    //   game.takeAction({player: "Don", action: "ASSASSINATE", targetPlayer: "Junjie"});  //pays 3 coins
-    //   game.nextPlayer(); //moves on
-    // }
-    //
-    // interactions.characterSpecificAction("Don", "Assassin", interactions.blockableAction("Don", "Assassin", "Junjie", assassinateSuccess, assassinateCalledOut), assassinateCalledOut);
-    //
-
-    // interactions.blockableAction() //
 });
 
 

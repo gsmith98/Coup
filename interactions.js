@@ -31,14 +31,14 @@ module.exports = function(socket, game, blockableAction) {
 
   function characterSpecificAction(actionObj) {
     //emit bs opportunity to all other players (broadcast)
-    console.log("11111111111111");
+    console.log("characterSpecificAction");
     responses = [];
     expectedResponses = game.numPlayers() - 1;
     socket.broadcast.emit("BSchance", actionObj);
   };
 
   function blockableAction(actionObj) {
-    console.log("11111111111111");
+    console.log("blockableAction");
     responses = [];
     expectedResponses = (actionObj.action === "FOREIGN AID") ? game.numPlayers() - 1 : 1;
     socket.broadcast.emit("blockChance", actionObj); //emit to all (other) players, client is responsible for only reacting if appropriate
@@ -59,7 +59,7 @@ module.exports = function(socket, game, blockableAction) {
     },
     "STEAL": {
       allowed: function (action) {
-        blockableAction(action) //emits blockChance //TODO write
+        blockableAction(action)
       },
       disallowed: moveOn
     },
@@ -83,13 +83,13 @@ module.exports = function(socket, game, blockableAction) {
   var blockables =
   {
     "STEAL": {
-      blocked: function (action) {
+      blocked: function (action) { //TODO client will respond to block with changed action type: "BLOCK STEAL CAPTAIN"
         console.log("blocked");
-        //TODO
+        characterSpecificAction(action); //TODO make this anonymous function just characterSpecificAction
       },
       notBlocked: function (action) {
         console.log("not blocked");
-        //TODO
+        performAction(action); //TODO make this anonymous function just performAction
       }
     }
     //TODO ASSASSINATE, FOREIGN AID (steal x2?)
