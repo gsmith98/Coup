@@ -140,17 +140,16 @@ var BoardView = React.createClass({
     this.state.socket.on('updateStatus', () => {
       this.state.socket.emit('requestState', null);
     });
+
     this.state.socket.on(this.state.username + 'newGameStatus', (data) => {
       var userInfo = data.filter((x) => {
         return x.username===this.state.username
       })
-
       console.log("I am this user: ", userInfo)
-
       this.setState({
         playerObjects: data,
         coin: userInfo.coins
-      })
+      });
     });
 
     this.state.socket.emit('requestState', null);
@@ -211,12 +210,16 @@ var BoardView = React.createClass({
   },
   renderTiles(){
     var playerOn = this.state.playerObjects;
+    if(!playerOn[0]){
+      return null;
+    }
     if(playerOn[0]){
       while(this.state.username !== playerOn[0].username){
         var element = playerOn.shift();
         playerOn.push(element);
       }
     }
+    console.log("this is play deck card: ", playerOn)
     if(playerOn[0]){
     var currentcard0 = playerOn[0].influence[0].role;
     var currentcard1 = playerOn[0].influence[1].role;
@@ -245,37 +248,7 @@ var BoardView = React.createClass({
       return null
      });
 
-    // {playerOn[2] ? (
-    //   <Text style={{textAlign: 'center', flex: 1}}>{playerOn[2].username}</Text>
-    // ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
-    //
-    // {playerOn[2] ? (
-    // <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[2].coins}</Text>
-    // ) : (<Text style={{textAlign: 'center', flex: 1}}>"No Player"</Text>)}
-
-    // {playerOn[1] ? (
-    // <View style={{flex:4}}>
-    // <Text style={{textAlign: 'center', flex: 2}}>{playerOn[1].username}</Text>
-    // <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[1].coins}</Text>
-    // </View>
-    // ) : (
-    // <View style={{flex:4}}>
-    // <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
-    // <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
-    // </View>
-    // )}
-    //
-    // {playerOn[3] ? (
-    // <View style={{flex:4}}>
-    // <Text style={{textAlign: 'center', flex: 2}}>{playerOn[3].username}</Text>
-    // <Text style={{textAlign: 'center', flex: 2}}>Coins: {playerOn[3].coins}</Text>
-    // </View>
-    // ) : (
-    // <View style={{flex:4}}>
-    // <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
-    // <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
-    // </View>
-    // )}
+    console.log("this is play deck card1111111: ", playerOn)
     return (
       <View>
       <Image source={require('./download.jpg')} style={styles.piccontainer}>
@@ -285,11 +258,9 @@ var BoardView = React.createClass({
               <View style={{alignItems: 'center', flex: 8}}>
               {playerOn[1] ? (
                   <Image
-                    style={{ transform: [{rotate: '180deg'}] }}
-                    source={picture[card1]}>
+                    source={picture[playerOn[1].influence[0].role]}>
                   </Image>
                 ) : ( <Image
-                  style={{transform: [{rotate: '180deg'}] }}
                   source={picture.Facedown}>
                 </Image> ) }
               </View>
@@ -297,11 +268,9 @@ var BoardView = React.createClass({
               <View style={{alignItems: 'center', flex: 8}}>
               {playerOn[1] ? (
                   <Image
-                    style={{ transform: [{rotate: '180deg'}] }}
-                    source={picture[card0]}>
+                    source={picture[playerOn[1].influence[1].role]}>
                   </Image>
                 ) : ( <Image
-                  style={{transform: [{rotate: '180deg'}] }}
                   source={picture.Facedown}>
                 </Image> ) }
               </View>
@@ -323,7 +292,7 @@ var BoardView = React.createClass({
                       <View style={{flex: 1}}>
                       {playerOn[2] ? (
                           <Image
-                            source={picture[card3]}>
+                            source={picture[playerOn[2].influence[0].role]}>
                           </Image>
                         ) : ( <Image
                           source={picture.Facedown}>
@@ -333,7 +302,7 @@ var BoardView = React.createClass({
                       <View style={{ flex: 1}}>
                       {playerOn[2] ? (
                           <Image
-                            source={picture[card2]}>
+                            source={picture[playerOn[2].influence[1].role]}>
                           </Image>
                         ) : ( <Image
                           source={picture.Facedown}>
@@ -356,11 +325,9 @@ var BoardView = React.createClass({
                 <View style={{alignItems: 'center', flex: 8}}>
                   {playerOn[3] ? (
                     <Image
-                      style={{ transform: [{rotate: '180deg'}] }}
-                      source={picture[card4]}>
+                      source={picture[playerOn[3].influence[0].role]}>
                     </Image>
                   ) : ( <Image
-                    style={{transform: [{rotate: '180deg'}] }}
                     source={picture.Facedown}>
                   </Image> ) }
                 </View>
@@ -368,11 +335,9 @@ var BoardView = React.createClass({
                 <View style={{alignItems: 'center', flex: 8}}>
                   {playerOn[3] ? (
                       <Image
-                        style={{ transform: [{rotate: '180deg'}] }}
-                        source={picture[card5]}>
+                        source={picture[playerOn[3].influence[1].role]}>
                       </Image>
                     ) : ( <Image
-                      style={{transform: [{rotate: '180deg'}] }}
                       source={picture.Facedown}>
                     </Image> ) }
                 </View>
@@ -392,32 +357,25 @@ var BoardView = React.createClass({
 
             <View style={styles.userContainer}>
                 {playerOn[0] ? (
-                <Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent",}}>{playerOn[0].username} </Text>
-              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent",}}>"No Player"</Text>)}
+                <Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent"}}>{playerOn[0].username} </Text>
+              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent"}}>"No Player"</Text>)}
                 <View style={{flex: 1}}>
-                {playerOn[0] ? (
                     <Image
-                      source={picture[currentcard0]}>
+                      source={picture[playerOn[0].influence[0].role]}>
                     </Image>
-                  ) : ( <Image
-                    source={picture.Facedown}>
-                  </Image> ) }
                 </View>
 
                 <View style={{ flex: 1}}>
-                {playerOn[0] ? (
                     <Image
-                      source={picture[currentcard1]}>
+                      source={picture[playerOn[0].influence[1].role]}>
                     </Image>
-                  ) : ( <Image
-                    source={picture.Facedown}>
-                  </Image> ) }
                 </View>
                 {playerOn[0] ? (
-                <Text style={{textAlign: 'center', flex: 1,backgroundColor: "transparent",}}>Coins: {playerOn[0].coins}</Text>
-              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent",}}></Text>)}
+                <Text style={{textAlign: 'center', flex: 1,backgroundColor: "transparent"}}>Coins: {playerOn[0].coins}</Text>
+              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent"}}></Text>)}
             </View>
 
+            {(playerOn[0].coins < 10) ? (
             <View style={styles.userAction}>
               <View style={{flex: 1}}>
                 <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})}  textStyle={{fontSize: 12}}>
@@ -442,38 +400,59 @@ var BoardView = React.createClass({
                 Steal
                 </Button>
               </View>
-              {(this.state.coins >= 3) ? (
-              <View style={{flex: 1}}>
 
+              {(playerOn[0].coins >= 3) ? (
+              <View style={{flex: 1}}>
               <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "ASSASSINATE", open: true})} textStyle={{fontSize: 12}}>
                 Assassin
               </Button>
-
               </View>
                 ) : null}
 
-              {(this.state.coins >= 7) ? (
+              {(playerOn[0].coins>= 7) ? (
               <View style={{ flex: 1}}>
 
                     <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 12}}>
                       Coup
                     </Button>
-
               </View>
               ) : null}
-
-              <Modal
-               offset={-40}
-               open={this.state.open}
-               modalDidOpen={() => console.log('modal did open')}
-               modalDidClose={() => this.setState({open: false})}
-               style={{alignItems: 'center'}}>
-               <View>
-                  {targets}
-               </View>
-            </Modal>
+                  <Modal
+                   offset={-120}
+                   open={this.state.open}
+                   modalDidOpen={() => console.log('modal did open')}
+                   modalDidClose={() => this.setState({open: false})}
+                   style={{alignItems: 'center'}}>
+                   <View>
+                      {targets}
+                   </View>
+                </Modal>
 
             </View>
+
+            ) : (
+              <View style={styles.userAction}>
+              <View style={{ flex: 1}}>
+              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 12}}>
+                Coup
+              </Button>
+
+
+              <Modal
+                 offset={-120}
+                 open={this.state.open}
+                 modalDidOpen={() => console.log('modal did open')}
+                 modalDidClose={() => this.setState({open: false})}
+                 style={{alignItems: 'center'}}>
+                 <View>
+                    {targets}
+                 </View>
+              </Modal>
+              </View>
+            </View>
+              )
+            }
+
 
             <View style={styles.notif}>
               <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>{this.state.message}</Text>
