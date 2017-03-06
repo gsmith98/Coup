@@ -233,6 +233,17 @@ var BoardView = React.createClass({
       var card4 = playerOn[3].influence[0].role;
       var card5 = playerOn[3].influence[1].role;
     }
+    var targets = playerOn.map((x,index) => {
+      if(index !== 0){
+        return <Button key={index} style={{backgroundColor: "white"}} onPress={() => {
+          this.state.socket.emit('action', {player: this.state.username, action: this.state.action, targetPlayer: x.username})
+          this.setState({
+            open: false
+          })
+        }}>{x.username}</Button>
+      }
+      return null
+     });
 
     // {playerOn[2] ? (
     //   <Text style={{textAlign: 'center', flex: 1}}>{playerOn[2].username}</Text>
@@ -434,7 +445,7 @@ var BoardView = React.createClass({
               {(this.state.coins >= 3) ? (
               <View style={{flex: 1}}>
 
-              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={this.performAction.bind(this, {player: this.state.username, action: "ASSASSINATE"})} textStyle={{fontSize: 12}}>
+              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "ASSASSINATE", open: true})} textStyle={{fontSize: 12}}>
                 Assassin
               </Button>
 
@@ -444,12 +455,24 @@ var BoardView = React.createClass({
               {(this.state.coins >= 7) ? (
               <View style={{ flex: 1}}>
 
-                    <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={this.performAction.bind(this, {player: this.state.username, action: "COUP"})}   textStyle={{fontSize: 12}}>
+                    <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 12}}>
                       Coup
                     </Button>
 
               </View>
               ) : null}
+
+              <Modal
+               offset={-40}
+               open={this.state.open}
+               modalDidOpen={() => console.log('modal did open')}
+               modalDidClose={() => this.setState({open: false})}
+               style={{alignItems: 'center'}}>
+               <View>
+                  {targets}
+               </View>
+            </Modal>
+
             </View>
 
             <View style={styles.notif}>
