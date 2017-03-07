@@ -280,7 +280,7 @@ var BoardView = React.createClass({
        }
     });
 
-    socket.on("currentPlayer", (name) => {
+    this.state.socket.on("currentPlayer", (name) => {
       this.setState({"turnMessage": name});
     });
 

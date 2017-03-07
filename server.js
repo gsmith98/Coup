@@ -181,8 +181,8 @@ io.on('connection', function(socket){
       var firstPlayer = game.startGame();
       socket.emit("gameIsStarting", null);
       socket.broadcast.emit("gameIsStarting", null);
-      socket.emit("currentPlayer", firstPlayer);
-      socket.broadcast.emit("currentPlayer", firstPlayer);
+      socket.emit("currentPlayer", firstPlayer.username);
+      socket.broadcast.emit("currentPlayer", firstPlayer.username);
     } catch (e) {
       console.error(e);
       socket.emit("errorMessage", e);
