@@ -39,7 +39,7 @@ Player.prototype.loseInfluence = function(role) {
       x.alive = false;
       return true;
     }
-  })) throw "Player does not have specified role!"
+  })) throw "Player does not have specified role!" + role
   return this;
 };
 
@@ -48,7 +48,7 @@ Player.prototype.isOut = function() {
 };
 
 Player.prototype.hasRole = function(role) {
-  return this.influence.some(x => x.role === role);
+  return this.influence.some(x => (x.role === role && x.alive));
 }
 
 //TODO make sure all functions check if game is started

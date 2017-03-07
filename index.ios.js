@@ -14,7 +14,11 @@ import {
   AsyncStorage,
   Image
 } from 'react-native';
-
+import DropDown, {
+  Select,
+  Option,
+  OptionList,
+} from 'react-native-option-select';
 window.navigator.userAgent = "react-native";
 import SocketIOClient from 'socket.io-client';
 
@@ -130,9 +134,6 @@ var Login = React.createClass({
   }
 });
 
-// btile
-var {width, height} = require('Dimensions').get('window');
-
 var BoardView = React.createClass({
   getInitialState: function() {
     return {
@@ -141,6 +142,10 @@ var BoardView = React.createClass({
       coin: 2,
       socket: this.props.socket,
       open: false,
+      open1: false,
+      chooseCard: [],
+      chosen1: "",
+      chosen2: "",
       action: "",
       message: "game has not started yet and noone is in the room",
       gameStatus: 'not started'
@@ -233,7 +238,7 @@ var BoardView = React.createClass({
     this.state.socket.on("ambassadorCardsFor"+this.state.username, (data) => {
        var chooseCard = [];
        chooseCard.push(...data);
-
+       console.log(chooseCard, "this is my new card")
        var currentUser = this.state.playerObjects.filter((x) => {
          return x.username===this.state.username
        })
@@ -246,24 +251,26 @@ var BoardView = React.createClass({
        }else{
 
          if(currentUser[0].influence[0].alive){
-             chooseCard = chooseCard.push(currentUser[0].influence[0].role);
+             chooseCard.push(currentUser[0].influence[0].role);
          }else{
-             chooseCard = chooseCard.push(currentUser[0].influence[1].role);
+             chooseCard.push(currentUser[0].influence[1].role);
          }
          console.log(chooseCard+" if one of them is alive");
        }
 
-       Alert.alert('Pick the first card?',
-                   null,
-                 [{text: currentcard0, onPress: this.loseInfluence.bind(this, currentcard0, data)},
-                 {text: currentcard1, onPress: this.loseInfluence.bind(this, currentcard1, data)}]
-       );
-
-      this.state.socket.emit('AmbassadorDecision', {
-      kept: [{role: 'Duke', alive: false},
-             {role: 'Assassin', alive: true}],
-      returned: ["Duke", "Captain"]})
+       if(chooseCard.length === 3){
+          this.setState({
+            chooseCard: chooseCard,
+            open1: true
+          })
+       }else{
+         this.setState({
+           chooseCard: chooseCard,
+           open1: true
+         })
+       }
     })
+
    },
    startGame(){
      this.state.socket.emit('startGame', null);
@@ -288,6 +295,57 @@ var BoardView = React.createClass({
   },
   restart(){
     this.state.socket()
+  },
+  _getOptionList() {
+    return this.refs['OPTIONLIST'];
+  },
+  _canada(item) {
+      this.setState({
+          chosen1: item
+        });
+  },
+  _canada1(item) {
+      this.setState({
+          chosen2: item
+        });
+  },
+  finishChosen(){
+    var allChoices = this.state.chooseCard;
+
+    this.state.chooseCard.some((x,i) => {if (x === this.state.chosen1) {
+        allChoices.splice(i,1);
+        return true;
+    }})
+    if (this.state.chosen2) {
+      this.state.chooseCard.some((x,i) => {if (x === this.state.chosen2) {
+          allChoices.splice(i,1);
+          return true;
+      }})
+    }
+    var returned = allChoices;
+
+
+
+    if(this.state.chosen1 && this.state.chosen2){
+      this.state.socket.emit('AmbassadorDecision', {
+        kept: [{role: this.state.chosen1, alive: true},
+               {role: this.state.chosen2, alive: true}],
+        returned: returned})
+      }
+  else{
+      var deadRole = this.state.playerObjects[0].influence.filter(x => !x.alive)[0].role;
+      this.state.socket.emit('AmbassadorDecision', {
+        kept: [{role: this.state.chosen1, alive: true},
+               {role: deadRole, alive: false}],
+        returned: returned})
+    }
+    this.setState({chooseCard: [],
+                  open1: false,
+                  chosen1: "",
+                  chosen2: ""
+
+                });
+
   },
   render() {
     return <View style={styles.container}>
@@ -334,7 +392,18 @@ var BoardView = React.createClass({
       return null
      });
 
-    console.log("this is play deck card1111111: ", playerOn)
+     var items = [this.state.chooseCard.filter((x) => x!==this.state.chosen2).map( function(x, index){
+       return <Option>{x}</Option>
+     })]
+
+     var items1 = [this.state.chooseCard.filter((x) => x!==this.state.chosen1).map( (x, index) => {
+       return <Option>{x}</Option>
+     })]
+
+     console.log("this is item: ", items);
+     console.log("this is item #1 : ", items1);
+
+    console.log("this is this.state.cardChoosen ", this.state.chooseCard)
     return (
       <View style={{backgroundColor: 'transparent'}}>
       <Image source={require('./download.jpg')} style={styles.piccontainer}>
@@ -547,11 +616,11 @@ var BoardView = React.createClass({
             </View>
             ) : (
               <View style={styles.userAction}>
-              <View style={{ flex: 1}}>
-              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 12}}>
-                Coup
-              </Button>
-              </View>
+                  <View style={{ flex: 1}}>
+                  <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 12}}>
+                    Coup
+                  </Button>
+                  </View>
             </View>
               )
             }
@@ -570,6 +639,53 @@ var BoardView = React.createClass({
                </View>
              </Modal>
              </View>
+
+             <View style={styles.ButtonBack}>
+             <Modal
+                offset={40}
+                open={this.state.open1}
+                modalDidOpen={() => console.log('modal did open1221212121')}
+                modalDidClose={() => this.setState({open1: false})}
+                style={{alignItems: 'center', position: 'absolute', top: 10, backgroundColor: 'transparent'}}>
+                <View style={styles.modalContainer}>
+                <Select
+                  width={160}
+                  optionListRef={this._getOptionList}
+                  defaultValue="Select a Card to keep"
+                  onSelect={this._canada}>
+                  {items}
+                </Select>
+                {(this.state.chooseCard.length === 3) ? null : (
+                  <Select
+                  width={160}
+                  optionListRef={this._getOptionList}
+                  defaultValue="Select a Card to keep"
+                  onSelect={this._canada1}>
+                  {items1}
+
+                </Select>  )}
+
+                <OptionList ref="OPTIONLIST"/>
+
+                </View>
+
+                {(this.state.chooseCard.length === 4 && this.state.chosen1 && this.state.chosen2) ? (
+                  <Button style={{marginTop: 130,borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.finishChosen} textStyle={{fontSize: 10}}>
+                    Submit
+                  </Button>
+                ) :
+                null}
+
+                {(this.state.chooseCard.length === 3 && this.state.chosen1) ? (
+                  <Button style={{marginTop: 130,borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.finishChosen} textStyle={{fontSize: 10}}>
+                    Submit
+                  </Button>
+                ) :
+                null}
+
+
+              </Modal>
+              </View>
 
             <View style={styles.notif}>
               <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>{this.state.message}</Text>
@@ -592,7 +708,10 @@ var styles = StyleSheet.create({
     backgroundColor: "transparent"
   },
   modalContainer: {
-
+    backgroundColor: "white",
+    position: 'absolute',
+    flex: 1, justifyContent: 'center', alignItems: 'center',
+    top: 10
   },
   deadpic: {
     flex: 1,
@@ -694,7 +813,7 @@ var styles = StyleSheet.create({
   },
   ButtonBack: {
     position: 'absolute',
-    left:     Style.DEVICE_WIDTH/3,
+    left:     Style.DEVICE_WIDTH/2.9,
     top: Style.DEVICE_HEIGHT/4,
     zIndex: 99, width: 200,
     backgroundColor: "transparent"
