@@ -55,17 +55,15 @@ io.on('connection', function(socket){
       case "TAX":
       case "STEAL":
       case "EXCHANGE":
-      case "ASSASSINATE":
+      case "ASSASSINATE": //TODO check for coins?
         interactions.characterSpecificAction(action);
         break;
       case "INCOME":
-      case "COUP":
-        //TODO performAction
-        console.log("should performAction here");
+      case "COUP": //TODO check for coins?
+        interactions.performAction(action);
         break;
       case "FOREIGN AID":
-        //TODO blockableAction
-        console.log("Should blockable action for foreign aid here");
+        interactions.blockableAction(action);
         break;
       default:
         console.log("invalid action type");
@@ -78,49 +76,74 @@ io.on('connection', function(socket){
 
   //data will include action: actionObj, bs: bool, username: who <- cannot be refactored ton use socketUser
   socket.on('BS', (data) => {
-      console.log(data);
-      interactions.addResponse(data);
-      //once all responses are gathered
-      if (interactions.allResponsesGathered()) {
-        //check for the first positive response if any
-        if (!interactions.someResponse(x => {
-          if (!x.bs) {
-            console.log("Not Bullshit");
-            return false;
+    console.log(data);
+    interactions.addResponse(data);
+    //once all responses are gathered
+    if (interactions.allResponsesGathered()) {
+      //check for the first positive response if any
+      if (!interactions.someResponse(x => {
+        if (!x.bs) {
+          console.log("Not Bullshit");
+          return false;
+        } else {
+          //handle BS call
+          console.log("Yes to Bullshit");        //TODO need a switch for acting player and such
+          var loser = game.whoLostChallenge(x.username, x.action.player, actionToCharacter[x.action.action]);
+          if (loser === x.action.player) {
+            console.log("rejected call back");
+            interactions.askToLoseInfluence(loser, {reason: "Called Out", attemptedAction: x.action});
           } else {
-            //handle BS call
-            console.log("Yes to Bullshit");
-            var loser = game.whoLostChallenge(x.username, x.action.player, actionToCharacter[x.action.action]);
-            if (loser === x.action.player) {
-              console.log("rejected call back");
-              interactions.askToLoseInfluence(loser, {reason: "Called Out", attemptedAction: x.action});
-            } else {
-              console.log("Yes to action call back!");
-              interactions.askToLoseInfluence(loser, {reason: "Bad BS", attemptedAction: x.action});
-            }
-            return true
+            console.log("Yes to action call back!");
+            interactions.askToLoseInfluence(loser, {reason: "Bad BS", attemptedAction: x.action});
           }
-        })) {
-          console.log("No Bullshit action call back");
-          interactions.BSables[data.action.action].allowed(data.action);
+          return true
         }
+      })) {
+        console.log("No Bullshit action call back");
+        interactions.BSables[data.action.action].allowed(data.action);
       }
-    })
+    }
+  });
+
+  socket.on('block', (data) => {
+    console.log(data);
+    interactions.addResponse(data);
+    //once all responses are gathered
+    if (interactions.allResponsesGathered()) {
+      //check for the first positive response if any
+      if (!interactions.someResponse(x => {
+        if (!x.block) {
+          console.log("Not blocked");
+          return false;
+        } else {
+          console.log("Yes to block!");
+          interactions.characterSpecificAction(data.action); //TODO ensure this is a BLOCK
+        }
+        return true;
+      })) {
+        console.log("No block callback");
+        interactions.blockables[data.action.action].notBlocked(data.action);
+      }
+    }
+  });
 
   // data has chosenRole, attemptedAction, reason
   socket.on("LostInfluence", (data) => {
     console.log(socketUser + " chose to lose " + data.chosenRole);
     game.getPlayer(socketUser).loseInfluence(data.chosenRole);
+    interactions.updateClients();
 
+    //what should happen after the lost influence?
     switch (data.reason) {
       case "Called Out":
         console.log("interactions.BSables disallowed for called out");
-        interactions.BSables[data.attemptedAction.action].disallowed();
+        interactions.BSables[data.attemptedAction.action].disallowed(data.attemptedAction);
         break;
       case "Bad BS":
         console.log("interactions.BSables allowed for bad bs");
         interactions.BSables[data.attemptedAction.action].allowed(data.attemptedAction);
         break;
+      //TODO COUP, ASSASSINATE -> move on
       default:
         console.log("DEFAULT!!!!! SHOULDN'T BE HERE!!!!!");
     }

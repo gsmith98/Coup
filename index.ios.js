@@ -155,12 +155,27 @@ var BoardView = React.createClass({
     this.state.socket.emit('requestState', null);
 
     this.state.socket.on('BSchance', (data) => {
-        Alert.alert('Call Bullshit?',
-                    null,
-                  [{text: 'no', onPress: this.bsresponse.bind(this, false, data)},
-                  {text: 'yes', onPress: this.bsresponse.bind(this, true, data)}]
-        );
+      var msg = data.player + ': ' + data.action + (data.targetPlayer ? ' on ' + data.targetPlayer : '') + '. Call Bullshit?'
+      Alert.alert(msg, null,
+            [{text: 'no', onPress: this.bsresponse.bind(this, false, data)},
+              {text: 'yes', onPress: this.bsresponse.bind(this, true, data)}]
+      );
     });
+
+    this.state.socket.on('blockChance', (data) => {
+      if ((data.action === "FOREIGN AID" && data.player !== this.state.username) || data.targetPlayer === this.state.username) {
+        var msg = data.player + ': ' + data.action + (data.targetPlayer ? ' on you' : '') + '. Block?'
+        var choiceArray = ((data.action === "STEAL") ?
+        [{text: 'no', onPress: this.block.bind(this, false, data)},
+        {text: 'yes (Capt)', onPress: this.block.bind(this, true, data, "BLOCK STEAL CAPTAIN")},
+        {text: 'yes (Amb)', onPress: this.block.bind(this, true, data, "BLOCK STEAL AMBASSADOR")}]
+        :
+        [{text: 'no', onPress: this.block.bind(this, false, data, "BLOCK " + data.action)},
+        {text: 'yes', onPress: this.block.bind(this, true, data, "BLOCK " + data.action)}]);
+        Alert.alert(msg, null, choiceArray);
+      }
+    });
+
     this.state.socket.on(this.state.username, (data) => {
 
       console.log("asked to lose an influence");
@@ -198,6 +213,14 @@ var BoardView = React.createClass({
   },
   bsresponse(resp, data){
     this.state.socket.emit('BS', {username: this.state.username, bs: resp, action: data})
+  },
+  block(resp, data, newAction) {
+    if (resp) {
+      data.action = newAction;
+      data.targetPlayer = data.player;
+      data.player = this.state.username; //switch player and target for a block
+    }
+    this.state.socket.emit('block', {username: this.state.username, block: resp, action: data}) //TODO change action to block? maybe only if blocked?
   },
   loseInfluence(resp, data){
     data.chosenRole = resp;
