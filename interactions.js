@@ -17,6 +17,11 @@ module.exports = function(socket, game, blockableAction) {
   function updateClients() {
     socket.emit("updateStatus", null);
     socket.broadcast.emit("updateStatus", null);
+    var winner = game.getWinner();
+    if (winner) {
+      socket.emit("gameEnd", winner);
+      socket.broadcast.emit("gameEnd", winner);
+    }
   };
 
   function moveOn() {
@@ -36,14 +41,14 @@ module.exports = function(socket, game, blockableAction) {
     //emit bs opportunity to all other players (broadcast)
     console.log("characterSpecificAction");
     responses = [];
-    expectedResponses = game.numPlayers() - 1;
+    expectedResponses = game.numAlivePlayers() - 1;
     socket.broadcast.emit("BSchance", actionObj); //TODO need to emit also? and have client check if it's you?
   };
 
   function blockableAction(actionObj) {
     console.log("blockableAction");
     responses = [];
-    expectedResponses = (actionObj.action === "FOREIGN AID") ? game.numPlayers() - 1 : 1;
+    expectedResponses = (actionObj.action === "FOREIGN AID") ? game.numAlivePlayers() - 1 : 1;
     socket.emit("blockChance", actionObj);
     socket.broadcast.emit("blockChance", actionObj); //emit to all players, client is responsible for only reacting if appropriate
   };
@@ -63,7 +68,11 @@ module.exports = function(socket, game, blockableAction) {
     },
     "STEAL": {
       allowed: function (action) {
-        blockableAction(action) //TODO don't wrap
+        if (game.isAlive(action.targetPlayer)) {
+          blockableAction(action)
+        } else {
+          performAction(action);
+        }
       },
       disallowed: moveOn
     },
@@ -98,7 +107,11 @@ module.exports = function(socket, game, blockableAction) {
     },
     "ASSASSINATE": {
       allowed: function(action) {
-        blockableAction(action); //TODO don't wrap
+        if (game.isAlive(action.targetPlayer)) {
+          blockableAction(action);
+        } else {
+          moveOn();
+        }
       },
       disallowed: moveOn
     },

@@ -54,7 +54,7 @@ var picture = {
 export default class Coup extends Component {
   constructor(props) {
     super(props);
-    this.socket = SocketIOClient('http://localhost:8080', {
+    this.socket = SocketIOClient('https://tranquil-oasis-41087.herokuapp.com', {
       transports: ['websocket']
     })
   }
@@ -75,7 +75,7 @@ var Login = React.createClass({
   getInitialState: function() {
     return {
       username: '',
-      socket: SocketIOClient('http://localhost:8080', {
+      socket: SocketIOClient('https://tranquil-oasis-41087.herokuapp.com', {
         transports: ['websocket']
       })
     }
@@ -154,10 +154,15 @@ var BoardView = React.createClass({
   componentDidMount(){
     this.state.socket.on('gameEnd', (userObject) => {
       this.setState({
-        message: "This game is Over! The Winner is " + userObject.username + "!",
+        message: "This game is over! The winner is " + userObject.username + "!",
         gameStatus: 'end'
       });
-    })
+    });
+
+    this.state.socket.on('gameIsStarting', () => {
+      this.setState({gameStatus: "started"});
+    });
+
     this.state.socket.on('newUser', (data) => {
       console.log("new user has come in and his username is ", data)
       this.setState({
@@ -182,15 +187,19 @@ var BoardView = React.createClass({
     this.state.socket.emit('requestState', null);
 
     this.state.socket.on('BSchance', (data) => {
+      var alive = this.state.playerObjects.some((x) => x.username===this.state.username && x.influence.some((y) => y.alive));
+      if (alive) {
       var msg = data.player + ': ' + data.action + (data.targetPlayer ? ' on ' + data.targetPlayer : '') + '. Call Bullshit?'
-      Alert.alert(msg, null,
+        Alert.alert(msg, null,
             [{text: 'no', onPress: this.bsresponse.bind(this, false, data)},
               {text: 'yes', onPress: this.bsresponse.bind(this, true, data)}]
-      );
+        );
+      }
     });
 
     this.state.socket.on('blockChance', (data) => {
-      if ((data.action === "FOREIGN AID" && data.player !== this.state.username) || data.targetPlayer === this.state.username) {
+      var alive = this.state.playerObjects.some((x) => x.username===this.state.username && x.influence.some((y) => y.alive));
+      if (alive && ((data.action === "FOREIGN AID" && data.player !== this.state.username) || data.targetPlayer === this.state.username)) {
         var msg = data.player + ': ' + data.action + (data.targetPlayer ? ' on you' : '') + '. Block?'
         var choiceArray = ((data.action === "STEAL") ?
         [{text: 'no', onPress: this.block.bind(this, false, data)},
@@ -294,7 +303,7 @@ var BoardView = React.createClass({
     this.state.socket.emit("LostInfluence", data);
   },
   restart(){
-    this.state.socket()
+    //this.state.socket() //!!!!!
   },
   _getOptionList() {
     return this.refs['OPTIONLIST'];
@@ -348,11 +357,22 @@ var BoardView = React.createClass({
 
   },
   render() {
-    return <View style={styles.container}>
-             {this.renderTiles()}
-           </View>
+    return this.renderTiles();
   },
   renderTiles(){
+    if (this.state.gameStatus === 'not started') {
+      return (
+        <Image
+        source={require('./images/couprules.jpg')}
+        style={{width:null, height:null, flex: 1, opacity: 0.75, justifyContent: 'center', alignItems: 'center'}}
+        resizeMode = "stretch">
+        <Button style={{ alignSelf:'center', marginTop:20, padding:10, height:45, width: 300, overflow:'hidden', borderRadius:12, backgroundColor: 'white'}} textStyle={{fontSize: 18}} onPress={() => this.startGame()}>Start the games</Button>
+        <Text>Players in game:</Text>
+        {this.state.playerObjects.map((x, i) => <Text key={i}>{x.username}</Text>)}
+        </Image>
+      )
+    }
+
     var playerOn = this.state.playerObjects;
     if(!playerOn[0]){
       return null;
@@ -405,6 +425,7 @@ var BoardView = React.createClass({
 
     console.log("this is this.state.cardChoosen ", this.state.chooseCard)
     return (
+      <View style={styles.container}>
       <View style={{backgroundColor: 'transparent'}}>
       <Image source={require('./download.jpg')} style={styles.piccontainer}>
       </Image>
@@ -724,11 +745,12 @@ var BoardView = React.createClass({
             <View style={styles.notif}>
               <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>{this.state.message}</Text>
               {this.state.gameStatus === 'end' ? (
-                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.restart()} textStyle={{fontSize: 10}}>
+                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.restart} textStyle={{fontSize: 10}}>
                   Restart
                 </Button>
               ) : null}
             </View>
+     </View>
      </View>
     )
   }

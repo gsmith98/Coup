@@ -102,6 +102,7 @@ Game.prototype.startGame = function() {
   if (this.players < MIN_PLAYERS) throw "Not enough players in game yet!";
 
   this.isStarted = true;
+  this.isOver = false;
   return this.currentPlayer();
 };
 
@@ -219,6 +220,14 @@ Game.prototype.ambassadorDecision = function(playerName, keptInfluence, returned
     throw "no player with that name for ambassador!";
   }
 
+};
+
+Game.prototype.isAlive = function(playerName) {
+  return !this.getPlayer(playerName).isOut();
+};
+
+Game.prototype.numAlivePlayers = function() {
+  return this.players.filter(x => !x.isOut()).length;
 };
 
 //TODO and refactor other code to use hasRole

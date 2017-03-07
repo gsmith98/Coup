@@ -23,10 +23,6 @@ io.on('connection', function(socket){
   var interactions = interactionsConstructor(socket, game);
   var socketUser; //the user who sent whatever event is being handled in here //TODO refactor to use
 
-  socket.on("startGame", function(){
-
-  })
-
   socket.on("endGame", function(){
     if(game.getWinner()){
       socket.emit('gameEnd', game.getWinner())
@@ -47,8 +43,6 @@ io.on('connection', function(socket){
       socket.emit("errorMessage", e);
     }
   });
-
-  socket.on
 
   socket.on('requestState', () => {
     socket.emit(socketUser + "newGameStatus", game.getPlayerPerspective(socketUser)); //TODO channel name needn't use socketUser, emit goes only to requester
@@ -178,6 +172,17 @@ io.on('connection', function(socket){
     game.ambassadorDecision(socketUser, data.kept, data.returned);
     interactions.moveOn();
     interactions.updateClients();
+  });
+
+  socket.on('startGame', () => {
+    try {
+      game.startGame();
+      socket.emit("gameIsStarting", null);
+      socket.broadcast.emit("gameIsStarting", null);
+    } catch (e) {
+      console.error(e);
+      socket.emit("errorMessage", e);
+    }
   });
 });
 
