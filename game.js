@@ -204,9 +204,23 @@ Game.prototype.getPlayerPerspective = function(viewer) {
     }
     return copy;
   });
-}
+};
 
-//TODO EXCHANGE
+Game.prototype.ambassadorDecision = function(playerName, keptInfluence, returnedRoles) {
+  if (!this.players.some(x => {
+    if (x.username === playerName) {
+      x.influence = keptInfluence; //TODO shuffle player influence?
+      this.deck.concat(returnedRoles);
+      this.deck = _.shuffle(this.deck);
+      return true;
+    }
+    return false;
+  })) {
+    throw "no player with that name for ambassador!";
+  }
+
+};
+
 //TODO and refactor other code to use hasRole
 
 

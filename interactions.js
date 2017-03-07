@@ -45,7 +45,7 @@ module.exports = function(socket, game, blockableAction) {
     responses = [];
     expectedResponses = (actionObj.action === "FOREIGN AID") ? game.numPlayers() - 1 : 1;
     socket.emit("blockChance", actionObj);
-    socket.broadcast.emit("blockChance", actionObj); //emit to all (other) players, client is responsible for only reacting if appropriate
+    socket.broadcast.emit("blockChance", actionObj); //emit to all players, client is responsible for only reacting if appropriate
   };
 
   function askToLoseInfluence(losingPlayer, lossDetails) {
@@ -63,7 +63,7 @@ module.exports = function(socket, game, blockableAction) {
     },
     "STEAL": {
       allowed: function (action) {
-        blockableAction(action)
+        blockableAction(action) //TODO don't wrap
       },
       disallowed: moveOn
     },
@@ -95,11 +95,33 @@ module.exports = function(socket, game, blockableAction) {
         action.targetPlayer = null;
         performAction(action);
       }
+    },
+    "ASSASSINATE": {
+      allowed: function(action) {
+        blockableAction(action); //TODO don't wrap
+      },
+      disallowed: moveOn
+    },
+    "BLOCK ASSASSINATE": {
+      allowed: moveOn,
+      disallowed: function (action) {
+        action.action = "ASSASSINATE";
+        var temp = action.player;
+        action.player = action.targetPlayer;
+        action.targetPlayer = temp;
+        askToLoseInfluence(action.targetPlayer, {reason: "Assassinated", attemptedAction: action});
+      }
+    },
+    "EXCHANGE": {
+      allowed: function(action) {
+        var drawn = game.drawFromCourtDeck(2);
+        socket.emit("ambassadorCardsFor" + action.player, drawn);
+        socket.broadcast.emit("ambassadorCardsFor" + action.player, drawn);
+      },
+      disallowed: moveOn
     }
-    //TODO EXCHANGE, ASSASSINATE, BLOCK ASSASSINATE,
   };
 
-  //TODO are all the objects in here gonna be identical? ditch?
   var blockables =
   {
     "STEAL": {
@@ -113,7 +135,7 @@ module.exports = function(socket, game, blockableAction) {
       }
     },
     "FOREIGN AID": {
-      blocked: function (action) { //client will respond to block with changed action type: "BLOCK STEAL CAPTAIN"
+      blocked: function (action) { //client will respond to block with changed action type: "BLOCK STEAL Ambassador"
         console.log("blocked");
         characterSpecificAction(action); //TODO make this anonymous function just characterSpecificAction
       },
@@ -121,8 +143,17 @@ module.exports = function(socket, game, blockableAction) {
         console.log("not blocked");
         performAction(action); //TODO make this anonymous function just performAction
       }
+    },
+    "ASSASSINATE": {
+      blocked: function (action) { //client will respond to block with changed action type: "BLOCK ASSASSINATE"
+        console.log("blocked");
+        characterSpecificAction(action); //TODO make this anonymous function just characterSpecificAction
+      },
+      notBlocked: function (action) {
+        console.log("not blocked");
+        askToLoseInfluence(action.targetPlayer, {reason: "Assassinated", attemptedAction: action});
+      }
     }
-    //TODO ASSASSINATE
   };
 
   return {
@@ -130,8 +161,8 @@ module.exports = function(socket, game, blockableAction) {
     allResponsesGathered,
     someResponse,
     updateClients,
-    moveOn, //TODO export needed?
-    performAction, //TODO export needed?
+    moveOn,
+    performAction,
     characterSpecificAction,
     blockableAction,
     askToLoseInfluence,

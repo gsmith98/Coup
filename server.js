@@ -64,15 +64,21 @@ io.on('connection', function(socket){
     }
 
     switch(action.action) {
+      case "ASSASSINATE": //TODO check for coins?
+        game.takeAction(action); //just deducts coins //NO BREAK! falls into character specific action
+        interactions.updateClients();
       case "TAX":
       case "STEAL":
       case "EXCHANGE":
-      case "ASSASSINATE": //TODO check for coins?
         interactions.characterSpecificAction(action);
         break;
       case "INCOME":
-      case "COUP": //TODO check for coins?
         interactions.performAction(action);
+        break;
+      case "COUP": //TODO check for coins?
+        game.takeAction(action); //just deducts coins
+        interactions.updateClients();
+        interactions.askToLoseInfluence(action.targetPlayer, {reason: "Couped", attemptedAction: action})
         break;
       case "FOREIGN AID":
         interactions.blockableAction(action);
@@ -129,7 +135,7 @@ io.on('connection', function(socket){
           return false;
         } else {
           console.log("Yes to block!");
-          interactions.characterSpecificAction(data.action); //TODO ensure this is a BLOCK
+          interactions.characterSpecificAction(data.action);
         }
         return true;
       })) {
@@ -155,11 +161,23 @@ io.on('connection', function(socket){
         console.log("interactions.BSables allowed for bad bs");
         interactions.BSables[data.attemptedAction.action].allowed(data.attemptedAction);
         break;
-      //TODO COUP, ASSASSINATE -> move on
+      case "Couped":
+      case "Assassinated":
+        interactions.moveOn();
+        break;
       default:
         console.log("DEFAULT!!!!! SHOULDN'T BE HERE!!!!!");
     }
 
+  });
+
+  //data should send an influence array and a returned card array
+  // kept: [{role: Duke, alive: false}, {role: Assassin, alive: true}]  returned: ["Duke", "Captain"]
+  socket.on("AmbassadorDecision", (data) => {
+    console.log("AmbassadorDecision", data);
+    game.ambassadorDecision(socketUser, data.kept, data.returned);
+    interactions.moveOn();
+    interactions.updateClients();
   });
 });
 

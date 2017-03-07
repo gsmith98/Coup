@@ -229,6 +229,41 @@ var BoardView = React.createClass({
     this.state.socket.on("errorMessage", (msg) => {
       this.setState({message: msg});
     });
+
+    this.state.socket.on("ambassadorCardsFor"+this.state.username, (data) => {
+       var chooseCard = [];
+       chooseCard.push(...data);
+
+       var currentUser = this.state.playerObjects.filter((x) => {
+         return x.username===this.state.username
+       })
+       var currentcard0 = currentUser[0].influence[0].role;
+       var currentcard1 = currentUser[0].influence[1].role;
+       if(currentUser[0].influence[0].alive && currentUser[0].influence[1].alive){
+
+          chooseCard = chooseCard.concat([currentUser[0].influence[0].role, currentUser[0].influence[1].role]);
+          console.log(chooseCard+" if they all alive");
+       }else{
+
+         if(currentUser[0].influence[0].alive){
+             chooseCard = chooseCard.push(currentUser[0].influence[0].role);
+         }else{
+             chooseCard = chooseCard.push(currentUser[0].influence[1].role);
+         }
+         console.log(chooseCard+" if one of them is alive");
+       }
+
+       Alert.alert('Pick the first card?',
+                   null,
+                 [{text: currentcard0, onPress: this.loseInfluence.bind(this, currentcard0, data)},
+                 {text: currentcard1, onPress: this.loseInfluence.bind(this, currentcard1, data)}]
+       );
+
+      this.state.socket.emit('AmbassadorDecision', {
+      kept: [{role: 'Duke', alive: false},
+             {role: 'Assassin', alive: true}],
+      returned: ["Duke", "Captain"]})
+    })
    },
    startGame(){
      this.state.socket.emit('startGame', null);
@@ -487,7 +522,7 @@ var BoardView = React.createClass({
               </View>
 
               <View style={{flex: 1}}>
-              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "EXCHANGE", open: true})}   textStyle={{fontSize: 10}}>
+              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "EXCHANGE"})}  textStyle={{fontSize: 10}}>
                 Exchange
                 </Button>
               </View>
