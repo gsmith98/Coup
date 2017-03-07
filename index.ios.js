@@ -205,7 +205,7 @@ var BoardView = React.createClass({
         {text: 'yes (Capt)', onPress: this.block.bind(this, true, data, "BLOCK STEAL CAPTAIN")},
         {text: 'yes (Amb)', onPress: this.block.bind(this, true, data, "BLOCK STEAL AMBASSADOR")}]
         :
-        [{text: 'no', onPress: this.block.bind(this, false, data, "BLOCK " + data.action)},
+        [{text: 'no', onPress: this.block.bind(this, false, data, data.action)},
         {text: 'yes', onPress: this.block.bind(this, true, data, "BLOCK " + data.action)}]);
         Alert.alert(msg, null, choiceArray);
       }

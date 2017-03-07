@@ -100,6 +100,8 @@ io.on('connection', function(socket){
         } else {
           //handle BS call
           console.log("Yes to Bullshit");        //TODO need a switch for acting player and such
+          console.log(x.action.action, " is x.action.action");
+          console.log(x.action, " is x.action");
           var loser = game.whoLostChallenge(x.username, x.action.player, actionToCharacter[x.action.action]);
           if (loser === x.action.player) {
             console.log("rejected call back");
