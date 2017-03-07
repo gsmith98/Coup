@@ -178,9 +178,11 @@ io.on('connection', function(socket){
 
   socket.on('startGame', () => {
     try {
-      game.startGame();
+      var firstPlayer = game.startGame();
       socket.emit("gameIsStarting", null);
       socket.broadcast.emit("gameIsStarting", null);
+      socket.emit("currentPlayer", firstPlayer);
+      socket.broadcast.emit("currentPlayer", firstPlayer);
     } catch (e) {
       console.error(e);
       socket.emit("errorMessage", e);

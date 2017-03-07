@@ -31,7 +31,9 @@ module.exports = function(socket, game, blockableAction) {
 
   function moveOn() {
     console.log("Move on called");
-    game.nextPlayer();
+    var nextPlayer = game.nextPlayer();
+    socket.emit("currentTurn", nextPlayer.username);
+    socket.broadcast.emit("currentTurn", nextPlayer.username);
     updateClients();
   };
 
@@ -39,8 +41,7 @@ module.exports = function(socket, game, blockableAction) {
     console.log("performAction called with action ", action.action);
     notification(game.actionString(action));
     game.takeAction(action);
-    game.nextPlayer();
-    updateClients();
+    moveOn();
   };
 
   function characterSpecificAction(actionObj) {

@@ -147,7 +147,8 @@ var BoardView = React.createClass({
       chosen2: "",
       action: "",
       message: "game has not started yet and noone is in the room",
-      gameStatus: 'not started'
+      gameStatus: 'not started',
+      turnMessage: "Nobody"
     }
   },
   componentDidMount(){
@@ -277,7 +278,11 @@ var BoardView = React.createClass({
            open1: true
          })
        }
-    })
+    });
+
+    socket.on("currentPlayer", (name) => {
+      this.setState({"turnMessage": name});
+    });
 
    },
    startGame(){
@@ -742,6 +747,7 @@ var BoardView = React.createClass({
               </View>
 
             <View style={styles.notif}>
+              <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>It is {this.state.turnMessage}{'\''}s turn</Text>
               <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>{this.state.message}</Text>
               {this.state.gameStatus === 'end' ? (
                 <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.restart} textStyle={{fontSize: 10}}>
