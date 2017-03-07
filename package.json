@@ -19,6 +19,7 @@
     "react-native-prompt": "^1.0.0",
     "react-native-simple-modal": "^4.0.2",
     "react-native-socketio": "^0.3.0",
+    "react-native-sound": "^0.9.1",
     "react-test-renderer": "15.4.2",
     "socket.io": "^1.7.3",
     "socket.io-client": "^1.7.3",

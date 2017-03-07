@@ -19,6 +19,22 @@ window.navigator.userAgent = "react-native";
 import SocketIOClient from 'socket.io-client';
 
 var Orientation = require('react-native-orientation')
+// var Sound = require('react-native-sound');
+// Sound.setCategory('Playback');
+// var whoosh = new Sound('./music.mp3', Sound.MAIN_BUNDLE, (error) => {
+//   if (error) {
+//     console.log('failed to load the sound', error);
+//     return;
+//   }
+// });
+// whoosh.play((success) => {
+//   if (success) {
+//     console.log('successfully finished playing');
+//   } else {
+//     console.log('playback failed due to audio decoding errors');
+//   }
+// });
+
 import Modal from 'react-native-simple-modal';
 import Style from "./Style";
 
@@ -126,10 +142,17 @@ var BoardView = React.createClass({
       socket: this.props.socket,
       open: false,
       action: "",
-      message: "game has not started yet and noone is in the room"
+      message: "game has not started yet and noone is in the room",
+      gameStatus: 'not started'
     }
   },
   componentDidMount(){
+    this.state.socket.on('gameEnd', (userObject) => {
+      this.setState({
+        message: "This game is Over! The Winner is " + userObject.username + "!",
+        gameStatus: 'end'
+      });
+    })
     this.state.socket.on('newUser', (data) => {
       console.log("new user has come in and his username is ", data)
       this.setState({
@@ -140,7 +163,6 @@ var BoardView = React.createClass({
     this.state.socket.on('updateStatus', () => {
       this.state.socket.emit('requestState', null);
     });
-
     this.state.socket.on(this.state.username + 'newGameStatus', (data) => {
       var userInfo = data.filter((x) => {
         return x.username===this.state.username
@@ -208,6 +230,9 @@ var BoardView = React.createClass({
       this.setState({message: msg});
     });
    },
+   startGame(){
+     this.state.socket.emit('startGame', null);
+   },
   performAction(actionObject){
     this.state.socket.emit('action', actionObject)
   },
@@ -225,6 +250,9 @@ var BoardView = React.createClass({
   loseInfluence(resp, data){
     data.chosenRole = resp;
     this.state.socket.emit("LostInfluence", data);
+  },
+  restart(){
+    this.state.socket()
   },
   render() {
     return <View style={styles.container}>
@@ -273,7 +301,7 @@ var BoardView = React.createClass({
 
     console.log("this is play deck card1111111: ", playerOn)
     return (
-      <View>
+      <View style={{backgroundColor: 'transparent'}}>
       <Image source={require('./download.jpg')} style={styles.piccontainer}>
       </Image>
        <View style={styles.otherPlayerBox}>
@@ -283,10 +311,7 @@ var BoardView = React.createClass({
                   <Image
                     source={picture[playerOn[1].influence[0].role]}>
                     {!playerOn[1].influence[0].alive ? (
-                      <View>
-                      <View style={styles.cross1}></View>
-                      <View style={styles.cross2}></View>
-                      </View>
+                        <Text style={styles.deadtext}>DEAD</Text>
                     ) : null}
                   </Image>
                 ) : ( <Image
@@ -299,10 +324,7 @@ var BoardView = React.createClass({
                   <Image
                     source={picture[playerOn[1].influence[1].role]}>
                     {!playerOn[1].influence[1].alive ? (
-                      <View>
-                      <View style={styles.cross1}></View>
-                      <View style={styles.cross2}></View>
-                      </View>
+                      <Text style={styles.deadtext}>DEAD</Text>
                     ) : null}
                   </Image>
                 ) : ( <Image
@@ -329,10 +351,9 @@ var BoardView = React.createClass({
                           <Image
                             source={picture[playerOn[2].influence[0].role]}>
                             {!playerOn[2].influence[0].alive ? (
-                              <View>
-                              <View style={styles.cross1}></View>
-                              <View style={styles.cross2}></View>
-                              </View>
+
+                              <Text style={styles.deadtext}>DEAD</Text>
+
                             ) : null}
                           </Image>
                         ) : ( <Image
@@ -345,10 +366,9 @@ var BoardView = React.createClass({
                           <Image
                             source={picture[playerOn[2].influence[1].role]}>
                             {!playerOn[2].influence[1].alive ? (
-                              <View>
-                              <View style={styles.cross1}></View>
-                              <View style={styles.cross2}></View>
-                              </View>
+
+                              <Text style={styles.deadtext}>DEAD</Text>
+
                             ) : null}
                           </Image>
                         ) : ( <Image
@@ -374,10 +394,9 @@ var BoardView = React.createClass({
                     <Image
                       source={picture[playerOn[3].influence[0].role]}>
                       {!playerOn[3].influence[0].alive ? (
-                        <View>
-                        <View style={styles.cross1}></View>
-                        <View style={styles.cross2}></View>
-                        </View>
+
+                        <Text style={styles.deadtext}>DEAD</Text>
+
                       ) : null}
                     </Image>
                   ) : ( <Image
@@ -390,10 +409,9 @@ var BoardView = React.createClass({
                       <Image
                         source={picture[playerOn[3].influence[1].role]}>
                         {!playerOn[3].influence[1].alive ? (
-                          <View>
-                          <View style={styles.cross1}></View>
-                          <View style={styles.cross2}></View>
-                          </View>
+
+                          <Text style={styles.deadtext}>DEAD</Text>
+
                         ) : null}
                       </Image>
                     ) : ( <Image
@@ -422,10 +440,9 @@ var BoardView = React.createClass({
                     <Image
                       source={picture[playerOn[0].influence[0].role]}>
                       {!playerOn[0].influence[0].alive ? (
-                        <View>
-                        <View style={styles.cross1}></View>
-                        <View style={styles.cross2}></View>
-                        </View>
+
+                          <Text style={styles.deadtext}>DEAD</Text>
+
                       ) : null}
                     </Image>
                 </View>
@@ -434,10 +451,7 @@ var BoardView = React.createClass({
                     <Image
                       source={picture[playerOn[0].influence[1].role]}>
                       {!playerOn[0].influence[1].alive ? (
-                        <View>
-                        <View style={styles.cross1}></View>
-                        <View style={styles.cross2}></View>
-                        </View>
+                        <Text style={styles.deadtext}>DEAD</Text>
                       ) : null}
                     </Image>
                 </View>
@@ -494,44 +508,41 @@ var BoardView = React.createClass({
                     </Button>
               </View>
               ) : null}
-                  <Modal
-                   offset={-120}
-                   open={this.state.open}
-                   modalDidOpen={() => console.log('modal did open')}
-                   modalDidClose={() => this.setState({open: false})}
-                   style={{alignItems: 'center'}}>
-                   <View>
-                      {targets}
-                   </View>
-                </Modal>
-            </View>
 
+            </View>
             ) : (
               <View style={styles.userAction}>
               <View style={{ flex: 1}}>
               <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 12}}>
                 Coup
               </Button>
-
-
-              <Modal
-                 offset={-120}
-                 open={this.state.open}
-                 modalDidOpen={() => console.log('modal did open')}
-                 modalDidClose={() => this.setState({open: false})}
-                 style={{alignItems: 'center'}}>
-                 <View style={styles.modalcontainer}>
-                    {targets}
-                 </View>
-              </Modal>
               </View>
             </View>
               )
             }
-
+            <View style={styles.ButtonBack}>
+            <Modal
+               offset={-100}
+               open={this.state.open}
+               modalDidOpen={() => console.log('modal did open')}
+               modalDidClose={() => this.setState({open: false})}
+               style={{alignItems: 'center', position: 'absolute', top: 100, backgroundColor: 'transparent'}}>
+               <View style={{backgroundColor: "transparent"}}>
+                  {targets}
+                  <Button style={{backgroundColor: "white"}} onPress={() => this.setState({open: false})}>
+                  Close
+                  </Button>
+               </View>
+             </Modal>
+             </View>
 
             <View style={styles.notif}>
               <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>{this.state.message}</Text>
+              {this.state.gameStatus === 'end' ? (
+                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.restart()} textStyle={{fontSize: 10}}>
+                  Restart
+                </Button>
+              ) : null}
             </View>
      </View>
     )
@@ -543,35 +554,26 @@ var styles = StyleSheet.create({
   container: {
     width: Style.DEVICE_WIDTH,
     height: Style.CARD_HEIGHT,
+    backgroundColor: "transparent"
   },
-  modalcontainer: {
-    position: 'relative',
-    top: -100,
+  modalContainer: {
+
   },
   deadpic: {
     flex: 1,
     backgroundColor: 'gray',
     opacity: 0.3,
   },
-  cross1: {
-    height: 110,
-    width: 5,
+  deadtext: {
+    fontSize: 30,
+    color: 'red',
+    backgroundColor: "transparent",
+    fontWeight: '900',
+    fontFamily: 'Futura-CondensedExtraBold',
     position: 'absolute',
-    top: -15,
-    left: 35,
-    backgroundColor: "red",
-    opacity: 0.5,
-    transform: [{rotate: '-45deg'}]
-  },
-  cross2: {
-    height: 110,
-    width: 5,
-    position: 'absolute',
-    top: -12,
-    right: 35,
-    backgroundColor: "red",
-    opacity: 0.5,
-    transform: [{rotate: '45deg'}]
+    top: 25,
+    left: 5,
+    transform: [{rotate: '25deg'}]
   },
   piccontainer: {
     width: Style.DEVICE_WIDTH,
@@ -654,6 +656,13 @@ var styles = StyleSheet.create({
     bottom: -Style.DEVICE_HEIGHT/4*3,
     flex: 6,
     flexDirection: 'row'
+  },
+  ButtonBack: {
+    position: 'absolute',
+    left:     Style.DEVICE_WIDTH/3,
+    top: Style.DEVICE_HEIGHT/4,
+    zIndex: 99, width: 200,
+    backgroundColor: "transparent"
   },
   notif: {
     width: Style.DEVICE_WIDTH/2,
