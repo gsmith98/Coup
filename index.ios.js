@@ -259,6 +259,12 @@ var BoardView = React.createClass({
               {playerOn[1] ? (
                   <Image
                     source={picture[playerOn[1].influence[0].role]}>
+                    {!playerOn[1].influence[0].alive ? (
+                      <View>
+                      <View style={styles.cross1}></View>
+                      <View style={styles.cross2}></View>
+                      </View>
+                    ) : null}
                   </Image>
                 ) : ( <Image
                   source={picture.Facedown}>
@@ -269,6 +275,12 @@ var BoardView = React.createClass({
               {playerOn[1] ? (
                   <Image
                     source={picture[playerOn[1].influence[1].role]}>
+                    {!playerOn[1].influence[1].alive ? (
+                      <View>
+                      <View style={styles.cross1}></View>
+                      <View style={styles.cross2}></View>
+                      </View>
+                    ) : null}
                   </Image>
                 ) : ( <Image
                   source={picture.Facedown}>
@@ -293,6 +305,12 @@ var BoardView = React.createClass({
                       {playerOn[2] ? (
                           <Image
                             source={picture[playerOn[2].influence[0].role]}>
+                            {!playerOn[2].influence[0].alive ? (
+                              <View>
+                              <View style={styles.cross1}></View>
+                              <View style={styles.cross2}></View>
+                              </View>
+                            ) : null}
                           </Image>
                         ) : ( <Image
                           source={picture.Facedown}>
@@ -303,6 +321,12 @@ var BoardView = React.createClass({
                       {playerOn[2] ? (
                           <Image
                             source={picture[playerOn[2].influence[1].role]}>
+                            {!playerOn[2].influence[1].alive ? (
+                              <View>
+                              <View style={styles.cross1}></View>
+                              <View style={styles.cross2}></View>
+                              </View>
+                            ) : null}
                           </Image>
                         ) : ( <Image
                           source={picture.Facedown}>
@@ -326,6 +350,12 @@ var BoardView = React.createClass({
                   {playerOn[3] ? (
                     <Image
                       source={picture[playerOn[3].influence[0].role]}>
+                      {!playerOn[3].influence[0].alive ? (
+                        <View>
+                        <View style={styles.cross1}></View>
+                        <View style={styles.cross2}></View>
+                        </View>
+                      ) : null}
                     </Image>
                   ) : ( <Image
                     source={picture.Facedown}>
@@ -336,6 +366,12 @@ var BoardView = React.createClass({
                   {playerOn[3] ? (
                       <Image
                         source={picture[playerOn[3].influence[1].role]}>
+                        {!playerOn[3].influence[1].alive ? (
+                          <View>
+                          <View style={styles.cross1}></View>
+                          <View style={styles.cross2}></View>
+                          </View>
+                        ) : null}
                       </Image>
                     ) : ( <Image
                       source={picture.Facedown}>
@@ -362,12 +398,24 @@ var BoardView = React.createClass({
                 <View style={{flex: 1}}>
                     <Image
                       source={picture[playerOn[0].influence[0].role]}>
+                      {!playerOn[0].influence[0].alive ? (
+                        <View>
+                        <View style={styles.cross1}></View>
+                        <View style={styles.cross2}></View>
+                        </View>
+                      ) : null}
                     </Image>
                 </View>
 
                 <View style={{ flex: 1}}>
                     <Image
                       source={picture[playerOn[0].influence[1].role]}>
+                      {!playerOn[0].influence[1].alive ? (
+                        <View>
+                        <View style={styles.cross1}></View>
+                        <View style={styles.cross2}></View>
+                        </View>
+                      ) : null}
                     </Image>
                 </View>
                 {playerOn[0] ? (
@@ -378,32 +426,38 @@ var BoardView = React.createClass({
             {(playerOn[0].coins < 10) ? (
             <View style={styles.userAction}>
               <View style={{flex: 1}}>
-                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})}  textStyle={{fontSize: 12}}>
+                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})}  textStyle={{fontSize: 10}}>
                   Taxes
                 </Button>
               </View>
 
               <View style={{flex: 1}}>
-                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "INCOME"})}    textStyle={{fontSize: 12}}>
+                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "INCOME"})}    textStyle={{fontSize: 10}}>
                   Income
                 </Button>
               </View>
 
               <View style={{flex: 1}}>
-                  <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN AID"})}    textStyle={{fontSize: 12}}>
+                  <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN AID"})}    textStyle={{fontSize: 10}}>
                   Foreign Aid
                   </Button>
               </View>
 
               <View style={{flex: 1}}>
-              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "STEAL", open: true})}   textStyle={{fontSize: 12}}>
+              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "STEAL", open: true})}   textStyle={{fontSize: 10}}>
                 Steal
+                </Button>
+              </View>
+
+              <View style={{flex: 1}}>
+              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "EXCHANGE", open: true})}   textStyle={{fontSize: 10}}>
+                Exchange
                 </Button>
               </View>
 
               {(playerOn[0].coins >= 3) ? (
               <View style={{flex: 1}}>
-              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "ASSASSINATE", open: true})} textStyle={{fontSize: 12}}>
+              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "ASSASSINATE", open: true})} textStyle={{fontSize: 10}}>
                 Assassin
               </Button>
               </View>
@@ -412,7 +466,7 @@ var BoardView = React.createClass({
               {(playerOn[0].coins>= 7) ? (
               <View style={{ flex: 1}}>
 
-                    <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 12}}>
+                    <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 10}}>
                       Coup
                     </Button>
               </View>
@@ -427,7 +481,6 @@ var BoardView = React.createClass({
                       {targets}
                    </View>
                 </Modal>
-
             </View>
 
             ) : (
@@ -444,7 +497,7 @@ var BoardView = React.createClass({
                  modalDidOpen={() => console.log('modal did open')}
                  modalDidClose={() => this.setState({open: false})}
                  style={{alignItems: 'center'}}>
-                 <View>
+                 <View style={styles.modalcontainer}>
                     {targets}
                  </View>
               </Modal>
@@ -467,6 +520,35 @@ var styles = StyleSheet.create({
   container: {
     width: Style.DEVICE_WIDTH,
     height: Style.CARD_HEIGHT,
+  },
+  modalcontainer: {
+    position: 'relative',
+    top: -100,
+  },
+  deadpic: {
+    flex: 1,
+    backgroundColor: 'gray',
+    opacity: 0.3,
+  },
+  cross1: {
+    height: 110,
+    width: 5,
+    position: 'absolute',
+    top: -15,
+    left: 35,
+    backgroundColor: "red",
+    opacity: 0.5,
+    transform: [{rotate: '-45deg'}]
+  },
+  cross2: {
+    height: 110,
+    width: 5,
+    position: 'absolute',
+    top: -12,
+    right: 35,
+    backgroundColor: "red",
+    opacity: 0.5,
+    transform: [{rotate: '45deg'}]
   },
   piccontainer: {
     width: Style.DEVICE_WIDTH,
