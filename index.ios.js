@@ -12,6 +12,8 @@ import {
   ListView,
   Alert,
   AsyncStorage,
+  NativeModules,
+
   Image
 } from 'react-native';
 import DropDown, {
@@ -38,6 +40,7 @@ import SocketIOClient from 'socket.io-client';
 //   }
 // });
 
+var Orientation = require('react-native-orientation-controller');
 import Modal from 'react-native-simple-modal';
 import Style from "./Style";
 
@@ -360,6 +363,9 @@ var BoardView = React.createClass({
                 });
 
   },
+  rotate: function (rotation) {
+    NativeModules.OrientationController.rotate(getRotation(1));
+  },
   render() {
     return this.renderTiles();
   },
@@ -379,6 +385,7 @@ var BoardView = React.createClass({
 
     var playerOn = this.state.playerObjects;
     if(!playerOn[0]){
+      Orientation.rotate(2);
       return null;
     }
     if(playerOn[0]){
@@ -424,10 +431,6 @@ var BoardView = React.createClass({
        return <Option>{x}</Option>
      })]
 
-     console.log("this is item: ", items);
-     console.log("this is item #1 : ", items1);
-
-    console.log("this is this.state.cardChoosen ", this.state.chooseCard)
     return (
       <View style={styles.container}>
       <View style={{backgroundColor: 'transparent'}}>
@@ -463,12 +466,12 @@ var BoardView = React.createClass({
 
               {playerOn[1] ? (
               <View style={styles.textBox}>
-              <Text style={{textAlign: 'center', flex: 1}}>{playerOn[1].username}</Text>
-              <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[1].coins}</Text>
+              <Text style={{textAlign: 'center', flex: 1, fontSize: 14, fontWeight: 'bold'}}>{playerOn[1].username}</Text>
+              <Text style={{textAlign: 'center', flex: 1, fontSize: 14, fontWeight: 'bold'}}>Coins: {playerOn[1].coins}</Text>
               </View>
               ) : (
               <View style={styles.textBox}>
-              <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+              <Text style={{textAlign: 'center', flex: 2, fontSize: 14, fontWeight: 'bold'}}>No Player</Text>
               </View>
               )}
             </View>
@@ -507,12 +510,12 @@ var BoardView = React.createClass({
 
                       {playerOn[2] ? (
                       <View style={styles.textBox}>
-                      <Text style={{textAlign: 'center', flex: 1}}>{playerOn[2].username}</Text>
-                      <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[2].coins}</Text>
+                      <Text style={{textAlign: 'center', flex: 1, fontSize: 14, fontWeight: 'bold'}}>{playerOn[2].username}</Text>
+                      <Text style={{textAlign: 'center', flex: 1, fontSize: 14, fontWeight: 'bold'}}>Coins: {playerOn[2].coins}</Text>
                       </View>
                       ) : (
                       <View style={styles.textBox}>
-                      <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+                      <Text style={{textAlign: 'center', flex: 2, fontSize: 14, fontWeight: 'bold'}}>No Player</Text>
                       </View>
                       )}
             </View>
@@ -550,12 +553,12 @@ var BoardView = React.createClass({
 
                   {playerOn[3] ? (
                   <View style={styles.textBox}>
-                  <Text style={{textAlign: 'center', flex: 1}}>{playerOn[3].username}</Text>
-                  <Text style={{textAlign: 'center', flex: 1}}>Coins: {playerOn[3].coins}</Text>
+                  <Text style={{textAlign: 'center', flex: 1, fontSize: 14, fontWeight: 'bold'}}>{playerOn[3].username}</Text>
+                  <Text style={{textAlign: 'center', flex: 1, fontSize: 14, fontWeight: 'bold'}}>Coins: {playerOn[3].coins}</Text>
                   </View>
                   ) : (
                   <View style={styles.textBox}>
-                  <Text style={{textAlign: 'center', flex: 2}}>No Player</Text>
+                  <Text style={{textAlign: 'center', flex: 2, fontSize: 14, fontWeight: 'bold'}}>No Player</Text>
                   </View>
                   )}
             </View>
@@ -563,8 +566,8 @@ var BoardView = React.createClass({
 
             <View style={styles.userContainer}>
                 {playerOn[0] ? (
-                <Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent"}}>{playerOn[0].username} </Text>
-              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent"}}>"No Player"</Text>)}
+                <Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent", fontSize: 16, fontWeight: 'bold'}}>My name: {playerOn[0].username} </Text>
+              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent", fontSize: 16, fontWeight: 'bold'}}>"No Player"</Text>)}
                 <View style={{flex: 1}}>
                     <Image
                       source={picture[playerOn[0].influence[0].role]}>
@@ -585,8 +588,8 @@ var BoardView = React.createClass({
                     </Image>
                 </View>
                 {playerOn[0] ? (
-                <Text style={{textAlign: 'center', flex: 1,backgroundColor: "transparent"}}>Coins: {playerOn[0].coins}</Text>
-              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent"}}></Text>)}
+                <Text style={{textAlign: 'center', flex: 1,backgroundColor: "transparent", fontSize: 16, fontWeight: 'bold'}}>Coins: {playerOn[0].coins}</Text>
+              ) : (<Text style={{textAlign: 'center', flex: 1, backgroundColor: "transparent", fontSize: 16, fontWeight: 'bold'}}></Text>)}
             </View>
 
             {(playerOn[0].coins < 10) ? (
@@ -705,20 +708,25 @@ var BoardView = React.createClass({
                 open={this.state.open1}
                 modalDidOpen={() => console.log('modal did open1221212121')}
                 modalDidClose={() => this.setState({open1: false})}
-                style={{alignItems: 'center', position: 'absolute', top: 10, backgroundColor: 'transparent'}}>
+                style={{alignItems: 'center', position: 'absolute', top: 10, backgroundColor: 'white'}}>
                 <View style={styles.modalContainer}>
                 <Select
                   width={160}
+                  height={50}
                   optionListRef={this._getOptionList}
                   defaultValue="Select a Card to keep"
+                  style={{backgroundColor: "white"}}
                   onSelect={this._canada}>
                   {items}
                 </Select>
+
+
                 {(this.state.chooseCard.length === 3) ? null : (
                   <Select
                   width={160}
                   optionListRef={this._getOptionList}
                   defaultValue="Select a Card to keep"
+                  style={{backgroundColor: "white"}}
                   onSelect={this._canada1}>
                   {items1}
 
@@ -747,7 +755,6 @@ var BoardView = React.createClass({
               </View>
 
             <View style={styles.notif}>
-              <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>It is {this.state.turnMessage}{'\''}s turn</Text>
               <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>{this.state.message}</Text>
               {this.state.gameStatus === 'end' ? (
                 <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.restart} textStyle={{fontSize: 10}}>
@@ -755,6 +762,11 @@ var BoardView = React.createClass({
                 </Button>
               ) : null}
             </View>
+
+            <View style={styles.notif2}>
+              <Text style={{textAlign: 'center', flex: 1, fontWeight: 'bold'}}>It is {this.state.turnMessage}{'\''}s turn</Text>
+            </View>
+
      </View>
      </View>
     )
@@ -769,10 +781,9 @@ var styles = StyleSheet.create({
     backgroundColor: "transparent"
   },
   modalContainer: {
-    backgroundColor: "white",
     position: 'absolute',
     flex: 1, justifyContent: 'center', alignItems: 'center',
-    top: 10
+    top: 10,
   },
   deadpic: {
     flex: 1,
@@ -887,7 +898,19 @@ var styles = StyleSheet.create({
     // backgroundColor: "purple",
     position: 'absolute',
     left:     Style.DEVICE_WIDTH/4,
-    bottom: -Style.DEVICE_HEIGHT/5*3,
+    bottom: -Style.DEVICE_HEIGHT/1.8,
+    flex: 1,
+    flexDirection: 'row'
+  },
+  notif2: {
+    width: Style.DEVICE_WIDTH/2,
+    height: Style.CARD_HEIGHT/8,
+    marginTop: Style.CARD_WIDTH/16,
+    backgroundColor: "transparent",
+    // backgroundColor: "purple",
+    position: 'absolute',
+    left:     -Style.DEVICE_WIDTH/8.0,
+    top: Style.DEVICE_HEIGHT/1.3,
     flex: 1,
     flexDirection: 'row'
   }
