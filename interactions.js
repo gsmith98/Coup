@@ -24,6 +24,11 @@ module.exports = function(socket, game, blockableAction) {
     }
   };
 
+  function notification(msg) {
+    socket.emit("errorMessage", msg);
+    socket.broadcast.emit("errorMessage", msg); //TODO this is called error message but is any ol message
+  };
+
   function moveOn() {
     console.log("Move on called");
     game.nextPlayer();
@@ -32,6 +37,7 @@ module.exports = function(socket, game, blockableAction) {
 
   function performAction(action) {
     console.log("performAction called with action ", action.action);
+    notification(game.actionString(action));
     game.takeAction(action);
     game.nextPlayer();
     updateClients();
@@ -174,6 +180,7 @@ module.exports = function(socket, game, blockableAction) {
     allResponsesGathered,
     someResponse,
     updateClients,
+    notification,
     moveOn,
     performAction,
     characterSpecificAction,

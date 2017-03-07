@@ -400,7 +400,7 @@ var BoardView = React.createClass({
       var card5 = playerOn[3].influence[1].role;
     }
     var targets = playerOn.map((x,index) => {
-      if(index !== 0){
+      if(index !== 0 && x.influence.some(card => card.alive)){
         return <Button key={index} style={{backgroundColor: "white"}} onPress={() => {
           this.state.socket.emit('action', {player: this.state.username, action: this.state.action, targetPlayer: x.username})
           this.setState({
