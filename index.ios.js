@@ -89,7 +89,7 @@ var Login = React.createClass({
     // if (username) {
     //         self.props.navigator.push({
     //           component: BoardView,
-    //           title: "Game Board",
+    //?         title: "Game Board",
     //           passProps: {username: username, socket: this.state.socket}
     //         })
     //     }
