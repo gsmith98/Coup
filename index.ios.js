@@ -567,49 +567,79 @@ var BoardView = React.createClass({
             {(playerOn[0].coins < 10) ? (
             <View style={styles.userAction}>
               <View style={{flex: 1}}>
-                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})}  textStyle={{fontSize: 10}}>
-                  Taxes
-                </Button>
+                <TouchableOpacity style={{ alignItems: 'center'}} onPress={this.performAction.bind(this, {player: this.state.username, action: "TAX"})}>
+                <Text style = {{fontSize: 10}}>
+                Taxes
+                </Text>
+                  <Image source={require('./images/icons/tax.png')} style={{width: 40, height: 40}}>
+                  </Image>
+                </TouchableOpacity>
               </View>
 
               <View style={{flex: 1}}>
-                <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "INCOME"})}    textStyle={{fontSize: 10}}>
-                  Income
-                </Button>
+                <TouchableOpacity style={{ alignItems: 'center'}} onPress={this.performAction.bind(this, {player: this.state.username, action: "INCOME"})}    textStyle={{fontSize: 10}}>
+                <Text style = {{fontSize: 10, alignItems: 'center'}}>
+                Income
+                </Text>
+                  <Image source={require('./images/icons/income.png')} style={{width: 40, height: 40}}>
+                  </Image>
+
+                </TouchableOpacity>
               </View>
 
               <View style={{flex: 1}}>
-                  <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN AID"})}    textStyle={{fontSize: 10}}>
+                  <TouchableOpacity style={{ alignItems: 'center'}} onPress={this.performAction.bind(this, {player: this.state.username, action: "FOREIGN AID"})}    textStyle={{fontSize: 6}}>
+                  <Text style = {{fontSize: 8.5}}>
                   Foreign Aid
-                  </Button>
+                  </Text>
+                  <Image source={require('./images/icons/foreignaid.png')} style={{width: 40, height: 40}}>
+                  </Image>
+                  </TouchableOpacity>
               </View>
 
               <View style={{flex: 1}}>
-              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "STEAL", open: true})}   textStyle={{fontSize: 10}}>
+              <TouchableOpacity style={{ alignItems: 'center'}} onPress={() => this.setState({action: "STEAL", open: true})}   textStyle={{fontSize: 10}}>
+              <Text style = {{fontSize: 10}}>
                 Steal
-                </Button>
+                </Text>
+                <Image source={require('./images/icons/steal.png')} style={{width: 40, height: 40}}>
+                </Image>
+                </TouchableOpacity>
               </View>
 
               <View style={{flex: 1}}>
-              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={this.performAction.bind(this, {player: this.state.username, action: "EXCHANGE"})}  textStyle={{fontSize: 10}}>
+
+              <TouchableOpacity style={{ alignItems: 'center'}} onPress={this.performAction.bind(this, {player: this.state.username, action: "EXCHANGE"})}   textStyle={{fontSize: 10}}>
+              <Text style = {{fontSize: 10}}>
                 Exchange
-                </Button>
+                </Text>
+                <Image source={require('./images/icons/exchange.png')} style={{width: 40, height: 40}}>
+                </Image>
+                </TouchableOpacity>
               </View>
 
               {(playerOn[0].coins >= 3) ? (
               <View style={{flex: 1}}>
-              <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "ASSASSINATE", open: true})} textStyle={{fontSize: 10}}>
+              <TouchableOpacity style={{ alignItems: 'center'}} onPress={() => this.setState({action: "ASSASSINATE", open: true})} textStyle={{fontSize: 10}}>
+              <Text style = {{fontSize: 10}}>
                 Assassin
-              </Button>
+                </Text>
+                <Image source={require('./images/icons/assassinate.png')} style={{width: 40, height: 40}}>
+                </Image>
+              </TouchableOpacity>
               </View>
                 ) : null}
 
               {(playerOn[0].coins>= 7) ? (
               <View style={{ flex: 1}}>
+              <TouchableOpacity style={{ alignItems: 'center'}} onPress={() => this.setState({action: "COUP", open: true})} textStyle={{fontSize: 10}}>
+              <Text style = {{fontSize: 10}}>
+                Coup
+                </Text>
+                <Image source={require('./images/icons/coup.png')} style={{width: 40, height: 40}}>
+                </Image>
+              </TouchableOpacity>
 
-                    <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white", borderRadius: 70}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 10}}>
-                      Coup
-                    </Button>
               </View>
               ) : null}
 
@@ -617,9 +647,13 @@ var BoardView = React.createClass({
             ) : (
               <View style={styles.userAction}>
                   <View style={{ flex: 1}}>
-                  <Button style={{borderWidth: 1, borderColor: 'black', backgroundColor: "white"}} onPress={() => this.setState({action: "COUP", open: true})}   textStyle={{fontSize: 12}}>
+                  <TouchableOpacity style={{ alignItems: 'center'}} onPress={() => this.setState({action: "COUP", open: true})} textStyle={{fontSize: 10}}>
+                  <Text style = {{fontSize: 10}}>
                     Coup
-                  </Button>
+                    </Text>
+                    <Image source={require('./images/icons/coup.png')} style={{width: 40, height: 40}}>
+                    </Image>
+                  </TouchableOpacity>
                   </View>
             </View>
               )
@@ -807,7 +841,7 @@ var styles = StyleSheet.create({
     // backgroundColor: "purple",
     position: 'absolute',
     left:     Style.DEVICE_WIDTH/4,
-    bottom: -Style.DEVICE_HEIGHT/4*3,
+    bottom: -Style.DEVICE_HEIGHT/1.4,
     flex: 6,
     flexDirection: 'row'
   },
