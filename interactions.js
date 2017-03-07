@@ -32,8 +32,8 @@ module.exports = function(socket, game, blockableAction) {
   function moveOn() {
     console.log("Move on called");
     var nextPlayer = game.nextPlayer();
-    socket.emit("currentTurn", nextPlayer.username);
-    socket.broadcast.emit("currentTurn", nextPlayer.username);
+    socket.emit("currentPlayer", nextPlayer.username);
+    socket.broadcast.emit("currentPlayer", nextPlayer.username);
     updateClients();
   };
 
