@@ -22,7 +22,6 @@ import DropDown, {
 window.navigator.userAgent = "react-native";
 import SocketIOClient from 'socket.io-client';
 
-var Orientation = require('react-native-orientation')
 // var Sound = require('react-native-sound');
 // Sound.setCategory('Playback');
 // var whoosh = new Sound('./music.mp3', Sound.MAIN_BUNDLE, (error) => {

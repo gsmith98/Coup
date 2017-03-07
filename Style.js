@@ -2,8 +2,8 @@ import React from "react-native";
 import Dimensions from 'Dimensions';
 
 // Precalculate Device Dimensions for better performance
-const x = Dimensions.get('window').width;
-const y = Dimensions.get('window').height;
+const y = Dimensions.get('window').width;
+const x = Dimensions.get('window').height;
 
 // Calculating ratio from iPhone breakpoints
 const ratioX = x < 375 ? (x < 320 ? 0.75 : 0.875) : 1 ;

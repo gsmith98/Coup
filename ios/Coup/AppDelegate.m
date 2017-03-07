@@ -11,8 +11,13 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-
+#import "Orientation.h" // <--- import
+#import "RCTRootView.h"
 @implementation AppDelegate
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+  return [Orientation getOrientation];
+}
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -33,5 +38,7 @@
   [self.window makeKeyAndVisible];
   return YES;
 }
+
+
 
 @end
