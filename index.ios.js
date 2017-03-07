@@ -54,7 +54,7 @@ var picture = {
 export default class Coup extends Component {
   constructor(props) {
     super(props);
-    this.socket = SocketIOClient('https://tranquil-oasis-41087.herokuapp.com', {
+    this.socket = SocketIOClient('https://stark-falls-86916.herokuapp.com/', {
       transports: ['websocket']
     })
   }
@@ -75,7 +75,7 @@ var Login = React.createClass({
   getInitialState: function() {
     return {
       username: '',
-      socket: SocketIOClient('https://tranquil-oasis-41087.herokuapp.com', {
+      socket: SocketIOClient('https://stark-falls-86916.herokuapp.com/', {
         transports: ['websocket']
       })
     }
