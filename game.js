@@ -230,6 +230,25 @@ Game.prototype.numAlivePlayers = function() {
   return this.players.filter(x => !x.isOut()).length;
 };
 
+Game.prototype.actionString = function(action) {
+  switch(action.action) {
+      case "INCOME":
+        return action.player + " gained 1 coin from Income.";
+      case "FOREIGN AID":
+        return action.player + " gained 2 coins from Foreign Aid.";
+      case "COUP":
+        return action.player + " paid 7 coins to Coup " + action.targetPlayer + ".";
+      case "TAX":
+        return action.player + " gained 3 coins from Tax.";
+      case "STEAL":
+        return action.player + " took (up to) 2 coins from " + action.targetPlayer + " with Steal.";
+      case "ASSASSINATE":
+        return action.player + " paid 3 coins to Assassinate " + action.targetPlayer + ".";
+      case "EXCHANGE":
+        return action.player + " drew 2 cards and kept their choice with Exchange."
+  }
+}
+
 //TODO and refactor other code to use hasRole
 
 
