@@ -6,6 +6,8 @@ My team and I create this game to compete in a gaming app hackathon hosted by Ho
 
 - Play with your friends - up to 6 players per games
 
+![Coup3](https://github.com/TiGaI/Coup/blob/master/coup3.png "HomePage") ![alt tag](https://github.com/TiGaI/Coup/blob/master/coup4.png "HomePage")
+
 You can create private games with your friends anytime, each match supports up to four players. You can add friends to your friend list by inviting them directly, importing from your contacts, using Facebook, or by adding favorite players you've met in any of the ranked matches.
 
 - Awesome Characters from my circle.
