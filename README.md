@@ -2,10 +2,10 @@
 Coup, the popular board game of deception and manipulation. Play against friends and opponents from around the world!
 
 My team and I create this game to compete in a gaming app hackathon hosted by Horizons School of Technology.  In this project, we use socket.io, react-native, mongodb, node, and express. The following are instruction on how the game works:
-![Coup1](http://Coup1.png "HomePage")
+![Coup1](http://TiGaI/Coup/blob/master/Coup1.png "HomePage")
 
 - Play with your friends - up to 6 players per games
-
+![alt tag](http://TiGaI/Coup/blob/master/Coup1.png "HomePage")
 You can create private games with your friends anytime, each match supports up to four players. You can add friends to your friend list by inviting them directly, importing from your contacts, using Facebook, or by adding favorite players you've met in any of the ranked matches.
 
 - Awesome Characters from my circle.
