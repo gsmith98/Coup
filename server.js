@@ -29,6 +29,7 @@ io.on('connection', function(socket){
     }
   })
 
+
   socket.on('username', function(username) {
     console.log(username)
     try {
@@ -37,6 +38,7 @@ io.on('connection', function(socket){
       socket.playerId = id;
       socketUser = username;
       socket.broadcast.emit('newUser', username);
+
     } catch(e) {
       socket.emit('username', false);
       console.error(e);
@@ -139,6 +141,7 @@ io.on('connection', function(socket){
         interactions.blockables[data.action.action].notBlocked(data.action);
       }
     }
+
   });
 
   // data has chosenRole, attemptedAction, reason
