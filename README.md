@@ -3,18 +3,18 @@ Coup, the popular board game of deception and manipulation. Play against friends
 
 My team and I create this game to compete in a gaming app hackathon hosted by Horizons School of Technology.  In this project, we use socket.io, react-native, mongodb, node, and express. The following are instruction on how the game works:
 
-##Login Screen
+## Login Screen
 
 ![Coup1](https://github.com/TiGaI/Coup/blob/master/Coup1.png "HomePage") 
 
-##Room Screen
+## Room Screen
 ![Coup3](https://github.com/TiGaI/Coup/blob/master/coup3.png "HomePage") 
 
-##Game Screen
+## Game Screen
 
 ![alt tag](https://github.com/TiGaI/Coup/blob/master/coup4.png "HomePage")
 
-##Game In Action
+## Game In Action
 ![alt tag](https://github.com/TiGaI/Coup/blob/master/coup9.png "HomePage")
 
 - Play with your friends - up to 6 players per games
@@ -31,7 +31,7 @@ Five awesome characters each with their own abilities.
 4. The Duke can claim tax and earn three coins. 
 5. The Ambassador can exchange cards and block steals.
 
-#here are detail rules of the game
+Here are detail rules of the game
 
 ![alt tag](https://github.com/TiGaI/Coup/blob/master/images/couprules.jpg "HomePage")
 
