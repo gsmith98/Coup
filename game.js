@@ -1,6 +1,6 @@
 "use strict";
 
-//var _ = require('underscore'); //TODO add to dependencies //TODO uncomment
+var _ = require('underscore'); //TODO add to dependencies //TODO uncomment
 
 const ROLES = ["Duke", "Assassin", "Captain", "Ambassador", "Contessa"];
 const MAX_PLAYERS = 4; //TODO change to 6
@@ -39,7 +39,7 @@ Player.prototype.loseInfluence = function(role) {
       x.alive = false;
       return true;
     }
-  })) throw "Player does not have specified role!"
+  })) throw "Player does not have specified role!" + role
   return this;
 };
 
@@ -48,7 +48,7 @@ Player.prototype.isOut = function() {
 };
 
 Player.prototype.hasRole = function(role) {
-  return this.influence.some(x => x.role === role);
+  return this.influence.some(x => (x.role === role && x.alive));
 }
 
 //TODO make sure all functions check if game is started
@@ -102,6 +102,7 @@ Game.prototype.startGame = function() {
   if (this.players < MIN_PLAYERS) throw "Not enough players in game yet!";
 
   this.isStarted = true;
+  this.isOver = false;
   return this.currentPlayer();
 };
 
@@ -204,10 +205,51 @@ Game.prototype.getPlayerPerspective = function(viewer) {
     }
     return copy;
   });
+};
+
+Game.prototype.ambassadorDecision = function(playerName, keptInfluence, returnedRoles) {
+  if (!this.players.some(x => {
+    if (x.username === playerName) {
+      x.influence = keptInfluence; //TODO shuffle player influence?
+      this.deck.concat(returnedRoles);
+      this.deck = _.shuffle(this.deck);
+      return true;
+    }
+    return false;
+  })) {
+    throw "no player with that name for ambassador!";
+  }
+
+};
+
+Game.prototype.isAlive = function(playerName) {
+  return !this.getPlayer(playerName).isOut();
+};
+
+Game.prototype.numAlivePlayers = function() {
+  return this.players.filter(x => !x.isOut()).length;
+};
+
+Game.prototype.actionString = function(action) {
+  switch(action.action) {
+      case "INCOME":
+        return action.player + " gained 1 coin from Income.";
+      case "FOREIGN AID":
+        return action.player + " gained 2 coins from Foreign Aid.";
+      case "COUP":
+        return action.player + " paid 7 coins to Coup " + action.targetPlayer + ".";
+      case "TAX":
+        return action.player + " gained 3 coins from Tax.";
+      case "STEAL":
+        return action.player + " took (up to) 2 coins from " + action.targetPlayer + " with Steal.";
+      case "ASSASSINATE":
+        return action.player + " paid 3 coins to Assassinate " + action.targetPlayer + ".";
+      case "EXCHANGE":
+        return action.player + " drew 2 cards and kept their choice with Exchange."
+  }
 }
 
-//TODO EXCHANGE
 //TODO and refactor other code to use hasRole
 
 
-// module.exports = Game; //TODO uncomment
+module.exports = Game; //TODO uncomment
