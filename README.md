@@ -30,3 +30,7 @@ Five awesome characters each with their own abilities.
 3. The Contessa can block assassination attempts. 
 4. The Duke can claim tax and earn three coins. 
 5. The Ambassador can exchange cards and block steals.
+
+#here are detail rules of the game
+![alt tag](https://github.com/TiGaI/Coup/blob/master/images/couprules.jpg "HomePage")
+
