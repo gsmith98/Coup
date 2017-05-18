@@ -32,5 +32,6 @@ Five awesome characters each with their own abilities.
 5. The Ambassador can exchange cards and block steals.
 
 #here are detail rules of the game
+
 ![alt tag](https://github.com/TiGaI/Coup/blob/master/images/couprules.jpg "HomePage")
 
