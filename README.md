@@ -11,6 +11,7 @@ My team and I create this game to compete in a gaming app hackathon hosted by Ho
 ![Coup3](https://github.com/TiGaI/Coup/blob/master/coup3.png "HomePage") 
 
 ##Game Screen
+
 ![alt tag](https://github.com/TiGaI/Coup/blob/master/coup4.png "HomePage")
 
 ##Game In Action
