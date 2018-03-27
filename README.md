@@ -31,7 +31,7 @@ Master the character specific abilities to win:
 
 But bear in mind all character cards start face down! You'll have to know exactly when to lie about your cards -- and when to call out your opponents for lying -- to achieve victory!
 
-Here are detailed rules of the game
+For more on the game, visit https://boardgamegeek.com/boardgame/131357/coup .
 
 ![alt tag](https://github.com/TiGaI/Coup/blob/master/images/couprules.jpg "HomePage")
 
